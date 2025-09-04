@@ -1,9 +1,14 @@
-﻿namespace PDV.Core.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PDV.Core.Entities
 {
     public class Category
     {
+        [Required]
         public int Id { get; set; }
-        
+
+        [Required]
+        [MaxLength(100)]
         public string Name { get; set; }
 
         public string Description { get; set; }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using PDV.Application.DTOs.Product;
 using PDV.Core.Entities;
 using PDV.Infrastructure.Data;
@@ -21,6 +22,8 @@ namespace PDV.API.Controllers
             _context = context;
             _mapper = mapper;
         }
+
+        #region GET Requisition
 
         [HttpGet]
         public async Task<ActionResult<List<ProductDTO>>> GetAll()
@@ -55,8 +58,12 @@ namespace PDV.API.Controllers
             return Ok(dto);
         }
 
+        #endregion
+
+        #region POST Requisition
+
         [HttpPost]
-        public async Task<IActionResult> Create(CreateProductDTO dto)
+        public async Task<ActionResult<CreateProductDTO>> Create(CreateProductDTO dto)
         {
             var categoryExists = await _context.Categories.AnyAsync(c => c.Id == dto.CategoryId);
             if (!categoryExists)
@@ -73,6 +80,30 @@ namespace PDV.API.Controllers
 
             return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
         }
+
+        #endregion
+
+        #region PUT/PATCH Requisition
+
+        #endregion
+
+        #region DELETE Requisition
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteFromId([FromRoute] int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+
+            if (product == null) 
+                return NotFound();
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        #endregion
 
     }
 }

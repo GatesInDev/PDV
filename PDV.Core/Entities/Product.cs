@@ -1,22 +1,30 @@
-﻿namespace PDV.Core.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PDV.Core.Entities
 {
     public class Product
     {
-        public required int Id { get; set; }
+        [Required]
+        public int Id { get; set; }
 
-        public int Sku { get; set; }
+        [MaxLength(100)]
+        public string Sku { get; set; }
 
-        public string Name { get; set; } = null!;
+        [Required]
+        [MaxLength(100)]
+        public string Name { get; set; }
 
-        public bool IsActive { get; set; } 
+        [Required]
+        public bool IsActive { get; set; }
 
-        public int MetricUnit { get; set; }
+        [MaxLength(100)]
+        public string MetricUnit { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         
         public int CategoryId { get; set; } // FK
 
-        public Category Category { get; set; } = null!; // Navigation Property
+        public Category Category { get; set; } // Navigation Property
 
     }
 }

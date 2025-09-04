@@ -1,6 +1,4 @@
-﻿using PDV.Core.Entities;
-
-namespace PDV.Application.DTOs.Product
+﻿namespace PDV.Application.DTOs.Product
 {
     public class ProductDTO
     {
