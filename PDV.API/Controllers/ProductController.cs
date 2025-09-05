@@ -63,7 +63,7 @@ namespace PDV.API.Controllers
         #region POST Requisition
 
         [HttpPost]
-        public async Task<ActionResult<CreateProductDTO>> Create(CreateProductDTO dto)
+        public async Task<ActionResult<CreateProductDTO>> PostProduct(CreateProductDTO dto)
         {
             var categoryExists = await _context.Categories.AnyAsync(c => c.Id == dto.CategoryId);
             if (!categoryExists)
