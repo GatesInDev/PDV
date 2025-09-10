@@ -4,8 +4,7 @@ namespace PDV.Core.Entities
 {
     public class Product
     {
-        [Required]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [MaxLength(100)]
         public string Sku { get; set; }
@@ -15,12 +14,15 @@ namespace PDV.Core.Entities
         public string Name { get; set; }
 
         [Required]
+        public decimal Price { get; set; }
+
+        [Required]
         public bool IsActive { get; set; }
 
         [MaxLength(100)]
         public string MetricUnit { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
         
         public int CategoryId { get; set; } // FK
 

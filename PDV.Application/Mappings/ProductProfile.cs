@@ -10,9 +10,11 @@ public class ProductProfile : Profile
             .ForMember(dest => dest.CategoryName,
                        opt => opt.MapFrom(src => src.Category.Name));
 
-        CreateMap<CreateProductDTO, Product>();
+        CreateMap<CreateProductDTO, Product>()
+                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId));
 
         CreateMap<UpdateProductDTO, Product>();
+
 
         CreateMap<Product, ProductDetailsDTO>()
             .ForMember(dest => dest.CategoryName,

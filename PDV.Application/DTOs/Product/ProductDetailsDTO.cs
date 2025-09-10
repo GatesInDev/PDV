@@ -2,7 +2,7 @@
 {
     public class ProductDetailsDTO
     {
-        public required int Id { get; set; }
+        public required Guid Id { get; set; }
 
         public string Sku { get; set; }
 
