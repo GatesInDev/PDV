@@ -50,4 +50,28 @@ public class ProductService : IProductService
 
     }
 
+    public async Task<Guid> UpdateAsync(Guid id, UpdateProductDTO dto)
+    {
+        var existingProduct = await _repository.GetByIdAsync(id);
+        if (existingProduct == null)
+        {
+            throw new Exception("Produto não encontrado.");
+        }
+        if (existingProduct.Sku != dto.Sku && await _repository.SkuExistsAsync(dto.Sku))
+        {
+            throw new Exception("SKU já existe.");
+        }
+        _mapper.Map(dto, existingProduct);
+        existingProduct.UpdatedAt = DateTime.UtcNow;
+        try
+        {
+            await _repository.UpdateAsync(existingProduct);
+            return existingProduct.Id;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Erro ao atualizar o produto no banco de dados.", ex);
+        }
+    }
+
 }

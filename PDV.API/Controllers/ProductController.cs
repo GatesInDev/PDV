@@ -64,5 +64,26 @@ namespace PDV.API.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Atualiza um produto.
+        /// </summary>
+        /// <returns>Produto atualizado</returns>
+        [HttpPost("{id}")]
+        [ProducesResponseType(typeof(ProductDetailsDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateProductDTO dto)
+        {
+            try
+            {
+                var productId = await _productService.UpdateAsync(id, dto);
+                var product = await _productService.GetByIdAsync(productId);
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

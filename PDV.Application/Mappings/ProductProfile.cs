@@ -13,8 +13,8 @@ public class ProductProfile : Profile
         CreateMap<CreateProductDTO, Product>()
                 .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId));
 
-        CreateMap<UpdateProductDTO, Product>();
-
+        CreateMap<UpdateProductDTO, Product>()
+                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId));
 
         CreateMap<Product, ProductDetailsDTO>()
             .ForMember(dest => dest.CategoryName,
