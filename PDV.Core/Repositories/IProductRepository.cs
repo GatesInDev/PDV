@@ -1,12 +1,15 @@
-﻿using PDV.Core.Entities;
+﻿using PDV.Core.Entities; // Para acessar a entidade Product
 
-public interface IProductRepository
+namespace PDV.Core.Repositories
 {
-    Task<Product> GetByIdAsync(Guid id);
+    public interface IProductRepository
+    {
+        Task<Product> GetByIdAsync(Guid id);
 
-    Task AddAsync(Product product);
+        Task AddAsync(Product product);
 
-    Task<bool> SkuExistsAsync(string sku);
+        Task<bool> SkuExistsAsync(string sku);
 
-    Task UpdateAsync(Product product);
+        Task UpdateAsync(Product product);
+    }
 }

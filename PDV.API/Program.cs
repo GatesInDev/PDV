@@ -1,12 +1,18 @@
-using Microsoft.EntityFrameworkCore;
-using PDV.Infrastructure.Data;
-using AutoMapper;
+using PDV.Core.Repositories; // Para ter acesso as interfaces de repositório
+using PDV.Application.Services.Interfaces; // Para ter acesso as interfaces de serviço
+using PDV.Application.Services.Implementations; // Para ter acesso as implementações de serviço
+using PDV.Infrastructure.Data;  // Para ter acesso ao AppDbContext
+using PDV.Infrastructure.Repositories; // Para ter acesso as implementações de repositório
+
+using Microsoft.EntityFrameworkCore; // Para ter acesso ao DbContext e DbSet
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddAutoMapper(typeof(ProductProfile));
 
 builder.Services.AddEndpointsApiExplorer();

@@ -1,10 +1,17 @@
 ﻿using PDV.Application.DTOs.Product;
 
-public interface IProductService
+namespace PDV.Application.Services.Interfaces
 {
-    Task<ProductDetailsDTO> GetByIdAsync(Guid id);
+    public interface IProductService
+    {
+        Task<ProductDetailsDTO> GetByIdAsync(Guid id);
 
-    Task<Guid> CreateAsync(CreateProductDTO dto);
+        Task<Guid> CreateAsync(CreateProductDTO dto);
 
-    Task<Guid> UpdateAsync(Guid id, UpdateProductDTO dto);
+        Task<Guid> UpdateAsync(Guid id, UpdateProductDTO dto);
+
+        //Task<IEnumerable<ProductDetailsDTO>> GetAllAsync();
+
+        //Task<bool> DeleteAsync(Guid id);
+    }
 }

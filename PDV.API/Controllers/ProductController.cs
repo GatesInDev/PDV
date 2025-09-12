@@ -1,12 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using PDV.Application.Services.Interfaces; // Para ter acesso a interface IProductService
+using PDV.Application.DTOs.Product; // Para ter acesso as DTOs de Product
+
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using PDV.Application.DTOs.Product;
-using PDV.Core.Entities;
-using PDV.Infrastructure.Data;
-using System.Runtime.CompilerServices;
 
 namespace PDV.API.Controllers
 {
@@ -16,6 +11,10 @@ namespace PDV.API.Controllers
     {
         private readonly IProductService _productService;
 
+        /// <summary>
+        /// Controlador de produtos.
+        /// </summary>
+        /// <param name="productService">Serviço de produtos.</param>
         public ProductController(IProductService productService)
         {
             _productService = productService;
@@ -25,8 +24,10 @@ namespace PDV.API.Controllers
         /// <summary>
         /// Retorna um produto pelo ID.
         /// </summary>
-        /// <param name="id">ID do produto</param>
-        /// <returns>Produto encontrado</returns>
+        /// <param name="id">Identificador do produto a ser encontrado.</param>
+        /// <returns>Produto encontrado e seus dados completos retornados.</returns>
+        /// <response code="200">Produto recuperado com sucesso.</response>
+        /// <response code="400">Erro na requisição, dados inválidos.</response>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ProductDetailsDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
@@ -44,9 +45,12 @@ namespace PDV.API.Controllers
         }
 
         /// <summary>
-        /// Cria um produto.
+        /// Cria um novo produto.
         /// </summary>
-        /// <returns>Produto criado</returns>
+        /// <param name="dto">Objeto com os dados completos do produto a ser criado.</param>
+        /// <returns>Produto novo criado com todos seus dados completos.</returns>
+        /// <response code="201">Produto criado com sucesso.</response>
+        /// <response code="400">Erro na requisição, dados inválidos.</response>
         [HttpPost]
         [ProducesResponseType(typeof(ProductDetailsDTO), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
@@ -66,9 +70,13 @@ namespace PDV.API.Controllers
         }
 
         /// <summary>
-        /// Atualiza um produto.
+        /// Atualiza um produto existente.
         /// </summary>
-        /// <returns>Produto atualizado</returns>
+        /// <param name="id">Identificador do produto a ser encontrado.</param>
+        /// <param name="dto">Objeto com os dados para substituir na categoria existente.</param>
+        /// <returns>Produto encontrado e seus dados substituidos.</returns>
+        /// <response code="200">Produto atualizado com sucesso.</response>
+        /// <response code="400">Erro na requisição, dados inválidos.</response>
         [HttpPost("{id}")]
         [ProducesResponseType(typeof(ProductDetailsDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]

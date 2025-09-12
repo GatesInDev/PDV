@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PDV.Core.Entities;
+﻿using PDV.Core.Entities; // Para ter acesso às entidades
+
+using Microsoft.EntityFrameworkCore; // Para ter acesso ao DbContext e DbSet
 
 namespace PDV.Infrastructure.Data
 {
