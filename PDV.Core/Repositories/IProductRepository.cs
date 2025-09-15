@@ -11,5 +11,9 @@ namespace PDV.Core.Repositories
         Task<bool> SkuExistsAsync(string sku);
 
         Task UpdateAsync(Product product);
+
+        Task<List<Product>> GetAllAsync();
+
+        Task<List<Product>> GetByCategory(string category);
     }
 }

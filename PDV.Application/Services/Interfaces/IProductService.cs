@@ -10,7 +10,9 @@ namespace PDV.Application.Services.Interfaces
 
         Task<Guid> UpdateAsync(Guid id, UpdateProductDTO dto);
 
-        //Task<IEnumerable<ProductDetailsDTO>> GetAllAsync();
+        Task<List<ProductDTO>> GetAllAsync();
+
+        Task<List<ProductDTO>> GetByCategoryAsync(string category);
 
         //Task<bool> DeleteAsync(Guid id);
     }

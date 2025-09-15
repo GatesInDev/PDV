@@ -11,6 +11,8 @@ namespace PDV.Core.Repositories
         Task<Category> GetByIdAsync(int id);
 
         Task UpdateAsync(Category category);
+
+        Task<List<Category>> GetAllAsync();
     }
 }
 

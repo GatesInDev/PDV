@@ -78,6 +78,12 @@ namespace PDV.Application.Services.Implementations
                 throw new Exception("Erro ao atualizar a categoria no banco de dados.", ex);
             }
         }
+
+        public async Task<List<CategoryDTO>> GetAllAsync()
+        {
+            var categories = await _repository.GetAllAsync();
+            return _mapper.Map<List<CategoryDTO>>(categories);
+        }
     }
 }
 

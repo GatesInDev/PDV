@@ -92,5 +92,27 @@ namespace PDV.API.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Retorna todas as categorias simplificadas.
+        /// </summary>
+        /// <returns>Categorias resumidas retornadas com sucesso.</returns>
+        /// <response code="200">Categorias recuperadas com sucesso.</response>
+        /// <response code="400">Erro na requisição, dados inválidos.</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(List<CategoryDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var categories = await _categoryService.GetAllAsync();
+                return Ok(categories);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

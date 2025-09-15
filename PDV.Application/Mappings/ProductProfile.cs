@@ -10,14 +10,15 @@ public class ProductProfile : Profile
             .ForMember(dest => dest.CategoryName,
                        opt => opt.MapFrom(src => src.Category.Name));
 
+        CreateMap<Product, ProductDetailsDTO>()
+            .ForMember(dest => dest.CategoryName,
+                       opt => opt.MapFrom(src => src.Category.Name));
+
         CreateMap<CreateProductDTO, Product>()
                 .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId));
 
         CreateMap<UpdateProductDTO, Product>()
                 .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId));
 
-        CreateMap<Product, ProductDetailsDTO>()
-            .ForMember(dest => dest.CategoryName,
-                       opt => opt.MapFrom(src => src.Category.Name));
     }
 }

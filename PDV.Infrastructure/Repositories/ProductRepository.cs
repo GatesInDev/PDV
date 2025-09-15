@@ -39,5 +39,16 @@ namespace PDV.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<Product>> GetAllAsync()
+        {
+            return await _context.Products
+                .Include(p => p.Category)
+                .ToListAsync();
+        }
+
+        public async Task<List<Product>> GetByCategory(string category)
+        {
+            return await _context.Products.Include(p => p.Category).Where(p => p.Category.Name == category).ToListAsync();
+        }
     }
 }

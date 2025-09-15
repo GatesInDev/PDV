@@ -41,6 +41,11 @@ namespace PDV.Infrastructure.Repositories
             _context.Categories.Update(category);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<Category>> GetAllAsync()
+        {
+           return await _context.Categories.ToListAsync();
+        }
     }
 }
 

@@ -93,5 +93,49 @@ namespace PDV.API.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Retorna todos os produtos resumidos.
+        /// </summary>
+        /// <returns>Lista de produtos encontrados e seus dados resumidos retornados.</returns>
+        /// <response code="200">Produtos retornados com sucesso.</response>
+        /// <response code="400">Erro na requisição, dados inválidos.</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(List<ProductDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var products = await _productService.GetAllAsync();
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Retorna todos os produtos pertencentes aquela categoria.
+        /// </summary>
+        /// <returns>Lista de produtos encontrados e seus dados resumidos retornados.</returns>
+        /// <response code="200">Produtos retornados com sucesso.</response>
+        /// <response code="400">Erro na requisição, dados inválidos.</response>
+        [HttpGet("Categories/{category}")]
+        [ProducesResponseType(typeof(List<ProductDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetAllFromCategory([FromRoute] string category)
+        {
+            try
+            {
+                var products = await _productService.GetByCategoryAsync(category);
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

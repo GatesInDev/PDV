@@ -12,7 +12,7 @@ namespace PDV.Application.Services.Interfaces
 
         Task<CategoryDetailsDTO> GetByIdAsync(int id);
 
-        //Task<IEnumerable<CategoryDTO>> GetAllAsync();
+        Task<List<CategoryDTO>> GetAllAsync();
 
         //Task<bool> ToggleActiveStatusAsync(int id);
     }

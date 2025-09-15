@@ -53,7 +53,6 @@ namespace PDV.Application.Services.Implementations
             }
 
         }
-
         public async Task<Guid> UpdateAsync(Guid id, UpdateProductDTO dto)
         {
             var existingProduct = await _repository.GetByIdAsync(id);
@@ -81,6 +80,18 @@ namespace PDV.Application.Services.Implementations
             {
                 throw new Exception("Erro ao atualizar o produto no banco de dados.", ex);
             }
+        }
+
+        public async Task<List<ProductDTO>> GetAllAsync()
+        {
+            var products = await _repository.GetAllAsync();
+            return _mapper.Map<List<ProductDTO>>(products);
+        }
+
+        public async Task<List<ProductDTO>> GetByCategoryAsync(string category)
+        {
+            var products = await _repository.GetByCategory(category);
+            return _mapper.Map<List<ProductDTO>>(products);
         }
     }
 }
