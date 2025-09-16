@@ -28,6 +28,12 @@ namespace PDV.Application.DTOs.Product
         public decimal Price { get; set; }
 
         /// <summary>
+        /// Definir a quantidade do produto.
+        /// </summary>
+        [Required]
+        public int Quantity { get; set; }
+
+        /// <summary>
         /// Definir a unidade de medida do produto(Un/Kg/Ml).
         /// </summary>
         [Required]

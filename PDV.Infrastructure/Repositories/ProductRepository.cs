@@ -19,7 +19,7 @@ namespace PDV.Infrastructure.Repositories
         {
             return await _context.Products
                 .Include(p => p.Category)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .FirstOrDefaultAsync(p => p.Id == id) ?? null!;
         }
 
         public async Task AddAsync(Product product)

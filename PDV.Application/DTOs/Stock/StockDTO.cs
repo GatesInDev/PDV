@@ -1,18 +1,12 @@
-﻿namespace PDV.Core.Entities
+﻿namespace PDV.Application.DTOs.Stock
 {
-    public class Stock
+    public class StockDTO
     {
         public Guid Id { get; set; }
-
         public Guid ProductId { get; set; } // FK
-
-        public Product Product { get; set; } // Navigation Property
-
+        public string ProductName { get; set; }
         public int Quantity { get; set; }
-
         public string MetricUnit { get; set; }
-
         public DateTime LastUpdated { get; set; }
-
     }
 }

@@ -22,7 +22,7 @@
 
         public Category Category { get; set; } // Navigation Property
 
-        public Stock Stock { get; set; } // Navigation Property
+        public Stock Stock { get; set; }
 
     }
 }
