@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PDV.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using PDV.Infrastructure.Data;
 namespace PDV.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250917175121_Update_7")]
+    partial class Update_7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,9 +81,6 @@ namespace PDV.Infrastructure.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("SaleQuantity")
-                        .HasColumnType("int");
-
                     b.Property<string>("Sku")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -93,31 +93,6 @@ namespace PDV.Infrastructure.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("PDV.Core.Entities.Sales", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CashOperator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("SaleDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Saless");
                 });
 
             modelBuilder.Entity("PDV.Core.Entities.Stock", b =>
@@ -147,7 +122,7 @@ namespace PDV.Infrastructure.Migrations
                     b.ToTable("Stocks");
                 });
 
-            modelBuilder.Entity("PDV.Core.Entities.StockTransaction", b =>
+            modelBuilder.Entity("StockTransaction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -158,10 +133,6 @@ namespace PDV.Infrastructure.Migrations
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("QuantityChanged")
                         .HasColumnType("int");
@@ -174,8 +145,6 @@ namespace PDV.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
 
                     b.ToTable("StockTransactions");
                 });
@@ -202,17 +171,6 @@ namespace PDV.Infrastructure.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("PDV.Core.Entities.StockTransaction", b =>
-                {
-                    b.HasOne("PDV.Core.Entities.Product", "Product")
-                        .WithMany("StockTransactions")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("PDV.Core.Entities.Category", b =>
                 {
                     b.Navigation("Products");
@@ -222,8 +180,6 @@ namespace PDV.Infrastructure.Migrations
                 {
                     b.Navigation("Stock")
                         .IsRequired();
-
-                    b.Navigation("StockTransactions");
                 });
 #pragma warning restore 612, 618
         }

@@ -14,6 +14,6 @@ namespace PDV.Application.Services.Interfaces
 
         Task<List<ProductDTO>> GetByCategoryAsync(string category);
 
-        //Task<bool> DeleteAsync(Guid id);
+        Task<bool> DisableProductAsync(Guid id);
     }
 }

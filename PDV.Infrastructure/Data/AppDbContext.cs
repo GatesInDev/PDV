@@ -15,6 +15,8 @@ namespace PDV.Infrastructure.Data
         public DbSet<Stock> Stocks => Set<Stock>();
         public DbSet<StockTransaction> StockTransactions => Set<StockTransaction>();
 
+        public DbSet<Sales> Saless => Set<Sales>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -27,6 +29,14 @@ namespace PDV.Infrastructure.Data
 
             modelBuilder.Entity<Stock>()
                 .HasKey(p => p.Id);
+
+            modelBuilder.Entity<StockTransaction>()
+                .HasKey(p => p.Id);
+
+            modelBuilder.Entity<StockTransaction>()
+                .HasOne(p => p.Product)
+                .WithMany(s => s.StockTransactions)
+                .HasForeignKey(pid => pid.ProductId);
 
             modelBuilder.Entity<Product>()
                 .HasOne(c => c.Category)

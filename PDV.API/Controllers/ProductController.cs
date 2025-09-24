@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PDV.API.Controllers
 {
+    /// <summary>
+    /// Requisições relacionadas a produtos.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
@@ -131,6 +134,23 @@ namespace PDV.API.Controllers
             {
                 var products = await _productService.GetByCategoryAsync(category);
                 return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DisableProduct([FromRoute] Guid id)
+        {
+            try
+            {
+                var result = await _productService.DisableProductAsync(id);
+                if (result)
+                    return Ok("Sucesso ao excluir");
+                else
+                    return BadRequest("Erro ao excluir");
             }
             catch (Exception ex)
             {

@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc; // Para ter acesso aos atributos de Controller
 
 namespace PDV.API.Controllers
 {
+    /// <summary>
+    /// Requisições relacionadas a categoria.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class CategoryController : ControllerBase

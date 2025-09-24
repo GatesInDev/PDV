@@ -48,8 +48,10 @@ namespace PDV.Application.Services.Implementations
                 throw new ArgumentNullException(nameof(dto));
             }
 
+
             var stock = _mapper.Map<Stock>(dto);
             stock.LastUpdated = DateTime.UtcNow;
+            stock.MetricUnit = dto.MetricUnit;
 
             try
             {

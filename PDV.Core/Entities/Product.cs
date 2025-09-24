@@ -22,7 +22,11 @@
 
         public Category Category { get; set; } // Navigation Property
 
+        public List<StockTransaction> StockTransactions { get; set; }
+
         public Stock Stock { get; set; }
+
+        public int SaleQuantity { get; set; } // Adicionado para representar a quantidade vendida
 
     }
 }

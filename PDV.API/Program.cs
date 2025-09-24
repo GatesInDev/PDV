@@ -15,6 +15,10 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddScoped<IStockRepository, StockRepository>();
+builder.Services.AddScoped<IStockTransactionService, StockTransactionService>();
+builder.Services.AddScoped<IStockTransactionRepository, StockTransactionRepository>();
+builder.Services.AddScoped<ISaleRepository, SaleRepository>();
+builder.Services.AddScoped<ISaleService, SaleService>();
 
 builder.Services.AddAutoMapper(typeof(ProductProfile));
 

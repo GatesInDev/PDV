@@ -2,17 +2,19 @@
 using PDV.Application.DTOs.Category;
 using PDV.Core.Entities;
 
-public class CategoryProfile : Profile
+namespace PDV.Application.Mappings
 {
-    public CategoryProfile()
+    public class CategoryProfile : Profile
     {
+        public CategoryProfile()
+        {
+            CreateMap<CreateCategoryDTO, Category>();
 
-        CreateMap<CreateCategoryDTO, Category>();
+            CreateMap<UpdateCategoryDTO, Category>();
 
-        CreateMap<UpdateCategoryDTO, Category>();
+            CreateMap<Category, CategoryDetailsDTO>();
 
-        CreateMap<Category, CategoryDetailsDTO>();
-
-        CreateMap<Category, CategoryDTO>();
+            CreateMap<Category, CategoryDTO>();
+        }
     }
 }

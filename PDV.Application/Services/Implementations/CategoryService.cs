@@ -12,12 +12,23 @@ namespace PDV.Application.Services.Implementations
         private readonly ICategoryRepository _repository;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Construtor do serviço de categoria.
+        /// </summary>
+        /// <param name="categoryRepository">Repositório de categoria.</param>
+        /// <param name="mapper">Acesso ao AutoMapper</param>
         public CategoryService(ICategoryRepository categoryRepository, IMapper mapper)
         {
             _repository = categoryRepository;
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Retorna uma categoria pelo seu ID.
+        /// </summary>
+        /// <param name="id">Identificador da Categoria.</param>
+        /// <returns>A Categoria pelo seu ID</returns>
+        /// <exception cref="Exception">Erro ao encontrar a Categoria.</exception>
         public async Task<CategoryDetailsDTO> GetByIdAsync(int id)
         {
             var category = await _repository.GetByIdAsync(id);
@@ -28,6 +39,12 @@ namespace PDV.Application.Services.Implementations
             return _mapper.Map<CategoryDetailsDTO>(category);
         }
 
+        /// <summary>
+        /// Cria uma nova categoria.
+        /// </summary>
+        /// <param name="categoryDto">Objeto com os dados da categoria a criar.</param>
+        /// <returns>Identificador da Categoria.</returns>
+        /// <exception cref="Exception">Erro ao criar a categoria.</exception>
         public async Task<int> CreateAsync(CreateCategoryDTO categoryDto)
         {
             if (await _repository.NameExistsAsync(categoryDto.Name))
@@ -51,6 +68,13 @@ namespace PDV.Application.Services.Implementations
             }
         }
 
+        /// <summary>
+        /// Atualiza uma categoria existente.
+        /// </summary>
+        /// <param name="id">Identificador da categoria a atualizar.</param>
+        /// <param name="categoryDto">Dados para alterar na categoria.</param>
+        /// <returns>Retorna o Id da categoria atualizada.</returns>
+        /// <exception cref="Exception">Erro ao atualizar a categoria.</exception>
         public async Task<int> UpdateAsync(int id, UpdateCategoryDTO categoryDto)
         {
             var existingCategory = await _repository. GetByIdAsync(id);
@@ -79,6 +103,10 @@ namespace PDV.Application.Services.Implementations
             }
         }
 
+        /// <summary>
+        /// Retorna todas as categorias.
+        /// </summary>
+        /// <returns>Uma lista com todas as categorias.</returns>
         public async Task<List<CategoryDTO>> GetAllAsync()
         {
             var categories = await _repository.GetAllAsync();
