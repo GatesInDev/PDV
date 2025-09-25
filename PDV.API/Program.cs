@@ -3,6 +3,7 @@ using PDV.Application.Services.Interfaces; // Para ter acesso as interfaces de s
 using PDV.Application.Services.Implementations; // Para ter acesso as implementações de serviço
 using PDV.Infrastructure.Data;  // Para ter acesso ao AppDbContext
 using PDV.Infrastructure.Repositories; // Para ter acesso as implementações de repositório
+using PDV.Application.Mappings; // Para ter acesso ao AutoMapper profiles
 
 using Microsoft.EntityFrameworkCore; // Para ter acesso ao DbContext e DbSet
 
@@ -19,8 +20,11 @@ builder.Services.AddScoped<IStockTransactionService, StockTransactionService>();
 builder.Services.AddScoped<IStockTransactionRepository, StockTransactionRepository>();
 builder.Services.AddScoped<ISaleRepository, SaleRepository>();
 builder.Services.AddScoped<ISaleService, SaleService>();
+builder.Services.AddScoped<ICashService, CashService>();
+builder.Services.AddScoped<ICashSessionRepository, CashSessionRepository>();
 
-builder.Services.AddAutoMapper(typeof(ProductProfile));
+
+builder.Services.AddAutoMapper(typeof(StockProfile));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -37,7 +41,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+}     
 
 app.UseHttpsRedirection();
 app.UseAuthorization();

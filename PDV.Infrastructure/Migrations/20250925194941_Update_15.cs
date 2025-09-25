@@ -5,25 +5,25 @@
 namespace PDV.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Update_6 : Migration
+    public partial class Update_15 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "MetricUnit",
-                table: "Stocks",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "");
+            migrationBuilder.DropColumn(
+                name: "CashOperator",
+                table: "Sales");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "MetricUnit",
-                table: "Stocks");
+            migrationBuilder.AddColumn<string>(
+                name: "CashOperator",
+                table: "Sales",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
         }
     }
 }

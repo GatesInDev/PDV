@@ -12,8 +12,8 @@ using PDV.Infrastructure.Data;
 namespace PDV.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250924181914_Update_9")]
-    partial class Update_9
+    [Migration("20250925194941_Update_15")]
+    partial class Update_15
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,33 @@ namespace PDV.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("PDV.Core.Entities.CashSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ClosedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("ClosingAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("OpenedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("OpeningAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("OperatorName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CashSession");
+                });
 
             modelBuilder.Entity("PDV.Core.Entities.Category", b =>
                 {
@@ -81,7 +108,7 @@ namespace PDV.Infrastructure.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("SaleQuantity")
+                    b.Property<int?>("SaleQuantity")
                         .HasColumnType("int");
 
                     b.Property<string>("Sku")
@@ -98,15 +125,14 @@ namespace PDV.Infrastructure.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("PDV.Core.Entities.Sales", b =>
+            modelBuilder.Entity("PDV.Core.Entities.Sale", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CashOperator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("CashSessionId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PaymentMethod")
                         .IsRequired()
@@ -120,7 +146,9 @@ namespace PDV.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Saless");
+                    b.HasIndex("CashSessionId");
+
+                    b.ToTable("Sales");
                 });
 
             modelBuilder.Entity("PDV.Core.Entities.Stock", b =>
@@ -162,10 +190,6 @@ namespace PDV.Infrastructure.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("QuantityChanged")
                         .HasColumnType("int");
 
@@ -183,6 +207,27 @@ namespace PDV.Infrastructure.Migrations
                     b.ToTable("StockTransactions");
                 });
 
+            modelBuilder.Entity("SaleProduct", b =>
+                {
+                    b.Property<Guid>("SaleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("PriceAtSaleTime")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("SaleId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("SaleProduct");
+                });
+
             modelBuilder.Entity("PDV.Core.Entities.Product", b =>
                 {
                     b.HasOne("PDV.Core.Entities.Category", "Category")
@@ -192,6 +237,17 @@ namespace PDV.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("PDV.Core.Entities.Sale", b =>
+                {
+                    b.HasOne("PDV.Core.Entities.CashSession", "CashSession")
+                        .WithMany("Sales")
+                        .HasForeignKey("CashSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CashSession");
                 });
 
             modelBuilder.Entity("PDV.Core.Entities.Stock", b =>
@@ -216,6 +272,30 @@ namespace PDV.Infrastructure.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("SaleProduct", b =>
+                {
+                    b.HasOne("PDV.Core.Entities.Product", "Product")
+                        .WithMany("SaleProducts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PDV.Core.Entities.Sale", "Sale")
+                        .WithMany("SaleProducts")
+                        .HasForeignKey("SaleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Sale");
+                });
+
+            modelBuilder.Entity("PDV.Core.Entities.CashSession", b =>
+                {
+                    b.Navigation("Sales");
+                });
+
             modelBuilder.Entity("PDV.Core.Entities.Category", b =>
                 {
                     b.Navigation("Products");
@@ -223,10 +303,17 @@ namespace PDV.Infrastructure.Migrations
 
             modelBuilder.Entity("PDV.Core.Entities.Product", b =>
                 {
+                    b.Navigation("SaleProducts");
+
                     b.Navigation("Stock")
                         .IsRequired();
 
                     b.Navigation("StockTransactions");
+                });
+
+            modelBuilder.Entity("PDV.Core.Entities.Sale", b =>
+                {
+                    b.Navigation("SaleProducts");
                 });
 #pragma warning restore 612, 618
         }

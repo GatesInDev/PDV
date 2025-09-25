@@ -2,16 +2,19 @@
 using PDV.Application.DTOs.Stock;
 using PDV.Core.Entities;
 
-public class StockProfile : Profile
+namespace PDV.Application.Mappings
 {
-    public StockProfile()
+    public class StockProfile : Profile
     {
-        CreateMap<CreateStockDTO, Stock>();
+        public StockProfile()
+        {
+            CreateMap<CreateStockDTO, Stock>();
 
-        CreateMap<Stock, StockDTO>()
-        .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
-        .ForMember(dest => dest.MetricUnit, opt => opt.MapFrom(src => src.Product.MetricUnit));
+            CreateMap<Stock, StockDTO>()
+            .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
+            .ForMember(dest => dest.MetricUnit, opt => opt.MapFrom(src => src.Product.MetricUnit));
 
-        CreateMap<UpdateStockDTO, Stock>();
+            CreateMap<UpdateStockDTO, Stock>();
+        }
     }
 }

@@ -141,6 +141,11 @@ namespace PDV.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Desabilita um produto.
+        /// </summary>
+        /// <param name="id">Identificador do produto a ser desabilitado.</param>
+        /// <returns>Sucesso ao desabilitar um produto.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DisableProduct([FromRoute] Guid id)
         {
@@ -148,7 +153,7 @@ namespace PDV.API.Controllers
             {
                 var result = await _productService.DisableProductAsync(id);
                 if (result)
-                    return Ok("Sucesso ao excluir");
+                    return Ok(await GetById(id));
                 else
                     return BadRequest("Erro ao excluir");
             }

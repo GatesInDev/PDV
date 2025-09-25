@@ -11,26 +11,44 @@ namespace PDV.Application.Services.Implementations
         private readonly IMapper _mapper;
         private readonly IStockRepository _repository;
 
+        /// <summary>
+        /// Construtor do serviço de estoque.
+        /// </summary>
+        /// <param name="repository">Repositório de estoque.</param>
+        /// <param name="mapper">DI do AutoMapper</param>
         public StockService(IStockRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Verifica se o estoque existe para o produto.
+        /// </summary>
+        /// <param name="productId">Produto cujo estoque será validado.</param>
+        /// <returns>True/False</returns>
         public Task<bool> StockExistsAsync(Guid productId)
         {
             return _repository.StockExistsAsync(productId);
         }
 
+        /// <summary>
+        /// Cria um novo estoque.
+        /// </summary>
+        /// <param name="dto">Objeto com os dados a serem criados.</param>
+        /// <returns>Sem retorno.</returns>
+        /// <exception cref="Exception">Estoque já existe ou houve erro ao criar o estoque.</exception>
         public async Task CreateAsync(CreateStockDTO dto)
         {
             if (await StockExistsAsync(dto.ProductId))
             {
                 throw new Exception("Estoque já existe para este produto.");
             }
+
             var stock = _mapper.Map<Stock>(dto);
             stock.Id = Guid.NewGuid();
             stock.LastUpdated = DateTime.UtcNow;
+
             try
             {
                 await _repository.CreateAsync(stock);
@@ -41,13 +59,19 @@ namespace PDV.Application.Services.Implementations
             }
         }
 
+        /// <summary>
+        /// Atualiza o estoque.
+        /// </summary>
+        /// <param name="dto">Objeto com os dados a serem atualizados.</param>
+        /// <returns>Sem retorno.</returns>
+        /// <exception cref="ArgumentNullException">Objeto invalido.</exception>
+        /// <exception cref="Exception">Erro ao atualizar o DB.</exception>
         public async Task UpdateStock(UpdateStockDTO dto)
         {
             if (dto == null)
             {
                 throw new ArgumentNullException(nameof(dto));
             }
-
 
             var stock = _mapper.Map<Stock>(dto);
             stock.LastUpdated = DateTime.UtcNow;
@@ -63,6 +87,12 @@ namespace PDV.Application.Services.Implementations
             }
         }
 
+        /// <summary>
+        /// Retorna o estoque pelo ID do produto.
+        /// </summary>
+        /// <param name="productId">Identificador do produto cujo estoque será encontrado.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public async Task<StockDTO> GetStockByProductId(Guid productId)
         {
             var stock = await _repository.GetByProductIdAsync(productId);

@@ -46,5 +46,38 @@ namespace PDV.API.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Retorna uma venda pelo ID.
+        /// </summary>
+        /// <param name="id">Identificador da venda.</param>
+        /// <returns>Os dados da venda.</returns>
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSaleById(Guid id)
+        {
+            try
+            {
+                var sale = await _saleService.GetSaleById(id);
+                return Ok(sale);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSaleByPeriod([FromQuery]DateTime startDate, [FromQuery]DateTime endDate)
+        {
+            try
+            {
+                var sales = await _saleService.GetSalesByPeriod(startDate, endDate);
+                return Ok(sales);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
     }
 }
