@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore; // Para ter acesso ao DbContext e DbSet
 
 namespace PDV.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Repositório para operações relacionadas a categorias.
+    /// </summary>
     public class CategoryRepository : ICategoryRepository
     {
         private readonly AppDbContext _context;

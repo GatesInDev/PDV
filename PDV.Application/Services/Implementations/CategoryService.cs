@@ -7,6 +7,9 @@ using AutoMapper; // Para ter acesso ao AutoMapper
 
 namespace PDV.Application.Services.Implementations
 {
+    /// <summary>
+    /// Serviço para operações relacionadas a categorias.
+    /// </summary>
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _repository;

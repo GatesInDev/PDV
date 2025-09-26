@@ -56,18 +56,16 @@
         /// <summary>
         /// Lista de transações de estoque associadas a este produto.
         /// </summary>
-        public List<StockTransaction> StockTransactions { get; set; }
+        public List<StockTransaction> StockTransactions { get; set; } = new();
 
         /// <summary>
         /// Stock associado a este produto (1:1).
         /// </summary>
-        public Stock Stock { get; set; }
+        public Stock Stock { get; set; }  = new();
 
         /// <summary>
-        /// Quantidade a ser vendida do produto.
+        /// Lista de produtos vendidos associados a este produto.
         /// </summary>
-        public int? SaleQuantity { get; set; }
-
         public List<SaleProduct> SaleProducts { get; set; } = new();
     }
 }

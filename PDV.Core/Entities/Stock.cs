@@ -1,5 +1,8 @@
 ﻿namespace PDV.Core.Entities
 {
+    /// <summary>
+    /// Entidade que representa o estoque de produtos.
+    /// </summary>
     public class Stock
     {
         /// <summary>

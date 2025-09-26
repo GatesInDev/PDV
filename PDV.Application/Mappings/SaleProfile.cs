@@ -2,6 +2,7 @@
 using PDV.Application.DTOs.Sales;
 using PDV.Core.Entities;
 using PDV.Application.DTOs.Product;
+using PDV.Application.DTOs.Customer;
 
 namespace PDV.Application.Mappings
 {
@@ -10,7 +11,9 @@ namespace PDV.Application.Mappings
         public SaleProfile()
         {
             CreateMap<Sale, SaleDetailsDTO>()
-            .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.SaleProducts));
+            .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.SaleProducts))
+            .ForMember(dest => dest.CashOperator, opt => opt.MapFrom(src => src.CashSession.OperatorName))
+            .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Customer.Name));
 
             CreateMap<SaleProduct, SaleProductDTO>()
                 .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Product.Id))
@@ -23,6 +26,8 @@ namespace PDV.Application.Mappings
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.SaleDate, opt => opt.Ignore())
             .ForMember(dest => dest.TotalPrice, opt => opt.Ignore());
+
+            CreateMap<Sale, CustomersAndSalesDTO>();
         }
     }
 }

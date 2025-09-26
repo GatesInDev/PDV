@@ -1,5 +1,8 @@
 ﻿namespace PDV.Application.DTOs.Stock
 {
+    /// <summary>
+    /// DTO para representar informações de estoque.
+    /// </summary>
     public class StockDTO
     {
         /// <summary>

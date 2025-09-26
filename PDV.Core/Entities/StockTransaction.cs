@@ -2,6 +2,9 @@
 
 namespace PDV.Core.Entities
 {
+    /// <summary>
+    /// Entidade que representa uma transação de estoque.
+    /// </summary>
     public class StockTransaction
     {
         /// <summary>

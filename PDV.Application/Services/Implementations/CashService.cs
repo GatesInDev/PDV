@@ -6,20 +6,33 @@ using PDV.Core.Repositories;
 
 namespace PDV.Application.Services.Implementations
 {
+    /// <summary>
+    /// Serviço para operações relacionadas ao caixa.
+    /// </summary>
     public class CashService : ICashService
     {
         private readonly ICashSessionRepository _repository;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Construtor do serviço de caixa.
+        /// </summary>
+        /// <param name="repository">Repositório da sessão de caixa.</param>
+        /// <param name="mapper">DI do AutoMapper.</param>
         public CashService(ICashSessionRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Abre uma nova sessão de caixa.
+        /// </summary>
+        /// <param name="dto">Objeto com os dados iniciais de abertura do caixa.</param>
+        /// <returns>Identificador do caixa.</returns>
+        /// <exception cref="Exception">Já existe um caixa aberto.</exception>
         public async Task<Guid> OpenCash(OpenCashSessionDTO dto)
         {
-            // Não permitir abrir outro se já existe aberto
             var existing = await _repository.GetOpenSessionAsync();
             if (existing != null)
                 throw new Exception("Já existe um caixa aberto.");
@@ -36,6 +49,12 @@ namespace PDV.Application.Services.Implementations
             return session.Id;
         }
 
+        /// <summary>
+        /// Fecha a sessão de caixa atual.
+        /// </summary>
+        /// <param name="dto">Objeto com os dados restantes para fechar o caixa.</param>
+        /// <returns>Sem retorno.</returns>
+        /// <exception cref="Exception">Erro ao fechar o caixa.</exception>
         public async Task CloseCash(CloseCashSessionDTO dto)
         {
             var session = await _repository.GetByIdAsync(dto.Id);
@@ -50,9 +69,13 @@ namespace PDV.Application.Services.Implementations
             await _repository.UpdateAsync(session);
         }
 
+        /// <summary>
+        /// Retorna uma sessão de caixa pelo seu Id.
+        /// </summary>
+        /// <param name="id">Identificador do caixa.</param>
+        /// <returns>Objeto com os dados do caixa.</returns>
         public async Task<CashSession?> GetCashById(Guid id)
         {
-
             return await _repository.GetByIdAsync(id);
         }
     }

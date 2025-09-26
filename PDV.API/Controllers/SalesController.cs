@@ -66,6 +66,12 @@ namespace PDV.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Retorna as vendas em um período.
+        /// </summary>
+        /// <param name="startDate">Data inicial de filtragem.</param>
+        /// <param name="endDate">Data final de filtragem.</param>
+        /// <returns>Uma lista com objetos dentro deste periodo.</returns>
         [HttpGet]
         public async Task<IActionResult> GetSaleByPeriod([FromQuery]DateTime startDate, [FromQuery]DateTime endDate)
         {

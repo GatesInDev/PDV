@@ -1,11 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using PDV.Core.Entities;
+using System.Text.Json.Serialization;
 
-namespace PDV.Core.Entities
+namespace PDV.Application.DTOs.Customer
 {
-    /// <summary>
-    /// Entidade que representa uma venda realizada no sistema.
-    /// </summary>
-    public class Sale
+    public class CustomersAndSalesDTO
     {
         /// <summary>
         /// Identificador único da venda.
@@ -43,16 +41,6 @@ namespace PDV.Core.Entities
         /// </summary>
         [JsonIgnore]
         public CashSession CashSession { get; set; }
-
-        /// <summary>
-        /// Identificador do cliente associado à venda, se houver.
-        /// </summary>
-        public Guid? CustomerId { get; set; }
-
-        /// <summary>
-        /// Nome do cliente associado à venda, se houver.
-        /// </summary>
-        public Customer Customer { get; set; }
 
     }
 }

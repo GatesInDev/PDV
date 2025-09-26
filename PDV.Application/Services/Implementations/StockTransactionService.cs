@@ -6,6 +6,9 @@ using PDV.Core.Entities;
 
 namespace PDV.Application.Services.Implementations
 {
+    /// <summary>
+    /// Serviço para operações de transações de estoque.
+    /// </summary>
     public class StockTransactionService : IStockTransactionService
     {
 

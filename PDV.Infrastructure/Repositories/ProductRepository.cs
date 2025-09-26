@@ -5,6 +5,9 @@ using PDV.Infrastructure.Data; // Para ter acesso ao AppDbContext
 
 namespace PDV.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Repositório para operações relacionadas a produtos.
+    /// </summary>
     public class ProductRepository : IProductRepository
     {
 

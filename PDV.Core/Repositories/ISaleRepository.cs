@@ -2,6 +2,9 @@
 
 namespace PDV.Core.Repositories
 {
+    /// <summary>
+    /// Interface para o repositório de vendas.
+    /// </summary>
     public interface ISaleRepository
     {
         /// <summary>
@@ -18,6 +21,19 @@ namespace PDV.Core.Repositories
         /// <returns>Entidade com os dados da venda.</returns>
         public Task<Sale> GetByIdAsync(Guid id);
 
+        /// <summary>
+        /// Retorna todas as vendas em um período do repositório.
+        /// </summary>
+        /// <param name="startDate">Data de inicio.</param>
+        /// <param name="endDate">Data de fim.</param>
+        /// <returns>Uma lista com as entidades filtradas.</returns>
         public Task<List<Sale>> GetByPeriodAsync(DateTime startDate, DateTime endDate);
+
+        /// <summary>
+        /// Retorna todas as vendas de um cliente específico.
+        /// </summary>
+        /// <param name="customerId">Identificador do cliente.</param>
+        /// <returns>Uma lista com as vendas de um cliente especifico.</returns>
+        public Task<List<Sale>> GetSaleByCostumerAsync(Guid customerId);
     }
 }

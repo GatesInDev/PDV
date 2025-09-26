@@ -2,6 +2,9 @@
 
 namespace PDV.Core.Repositories
 {
+    /// <summary>
+    /// Interface para o repositório de transações de estoque.
+    /// </summary>
     public interface IStockTransactionRepository
     {
         /// <summary>

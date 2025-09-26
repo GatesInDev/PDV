@@ -15,6 +15,8 @@ namespace PDV.Infrastructure.Data
         public DbSet<Stock> Stocks => Set<Stock>();
         public DbSet<StockTransaction> StockTransactions => Set<StockTransaction>();
         public DbSet<Sale> Sales => Set<Sale>();
+        public DbSet<Customer> Customers => Set<Customer>();
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,6 +32,9 @@ namespace PDV.Infrastructure.Data
                 .HasKey(p => p.Id);
 
             modelBuilder.Entity<StockTransaction>()
+                .HasKey(p => p.Id);
+
+            modelBuilder.Entity<Customer>()
                 .HasKey(p => p.Id);
 
             modelBuilder.Entity<StockTransaction>()
@@ -59,6 +64,12 @@ namespace PDV.Infrastructure.Data
                 .HasOne(sp => sp.Product)
                 .WithMany(p => p.SaleProducts)
                 .HasForeignKey(sp => sp.ProductId);
+
+            modelBuilder.Entity<Sale>()
+               .HasOne(c => c.Customer)
+               .WithMany(s => s.Sales)
+               .HasForeignKey(fk => fk.CustomerId)
+               .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -32,6 +32,5 @@ namespace PDV.API.Controllers
             var stock = await _stockService.GetStockByProductId(id);
             return Ok(stock);
         }
-
     }
 }

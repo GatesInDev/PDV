@@ -24,6 +24,8 @@ namespace PDV.Application.Services.Implementations
         /// <param name="productRepository">Repositório de produtos.</param>
         /// <param name="stockTransactionService">Serviço de Transações.</param>
         /// <param name="stockService">Serviço de estoque.</param>
+        /// <param name="cashSessionRepository">Repositório de sessão do Caixa.</param>
+        /// <param name="mapper">DI do AutoMapper.</param>
         public SaleService(ICashSessionRepository cashSessionRepository, IMapper mapper, ISaleRepository saleRepository, IProductRepository productRepository, IStockTransactionService stockTransactionService, IStockService stockService)
         {
             _saleRepository = saleRepository;
@@ -65,7 +67,6 @@ namespace PDV.Application.Services.Implementations
                     throw new Exception($"Produto com ID {item.ProductId} não encontrado.");
                 }
 
-                // Cria SaleProduct com preço atual do produto
                 var saleProduct = new SaleProduct
                 {
                     ProductId = product.Id,
@@ -75,10 +76,8 @@ namespace PDV.Application.Services.Implementations
 
                 sale.SaleProducts.Add(saleProduct);
 
-                // Soma parcial do total da venda
                 totalPrice += product.Price * item.Quantity;
 
-                // Cria transação de estoque
                 var stockTransactionDto = new CreateStockTransactionDTO
                 {
                     ProductId = product.Id,
@@ -88,7 +87,6 @@ namespace PDV.Application.Services.Implementations
                 };
                 await _stockTransactionService.CreateTransaction(stockTransactionDto);
 
-                // Atualiza o estoque
                 var stock = await _stockService.GetStockByProductId(product.Id);
 
                 var stockUpdate = new UpdateStockDTO
@@ -125,9 +123,25 @@ namespace PDV.Application.Services.Implementations
             return dto;
         }
 
+        /// <summary>
+        /// Retorna as vendas em um período.
+        /// </summary>
+        /// <param name="startDate">Data de inicio do filtro.</param>
+        /// <param name="endDate">Data de fim do filtro.</param>
+        /// <returns>Uma lista com todas as vendas do periodo.</returns>
         public async Task<List<SaleDetailsDTO>> GetSalesByPeriod(DateTime startDate, DateTime endDate)
         {
             var list = await _saleRepository.GetByPeriodAsync(startDate, endDate);
+
+            if (startDate > endDate)
+            {
+                throw new Exception($"A data inicial não deve ser maior que a final.");
+            }
+
+            if (!list.Any())
+            {
+                throw new Exception($"Não há vendas entre o periodo de {startDate} e {endDate}.");
+            }
 
             return _mapper.Map<List<SaleDetailsDTO>>(list);
         }

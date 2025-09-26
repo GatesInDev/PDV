@@ -2,6 +2,9 @@
 
 namespace PDV.Core.Repositories
 {
+    /// <summary>
+    /// Interface para o repositório de produtos.
+    /// </summary>
     public interface IProductRepository
     {
         /// <summary>

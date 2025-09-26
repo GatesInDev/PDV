@@ -2,6 +2,9 @@
 
 namespace PDV.Application.DTOs.Sales
 {
+    /// <summary>
+    /// DTO para exibição dos detalhes de uma venda.
+    /// </summary>
     public class SaleDetailsDTO
     {
         /// <summary>
@@ -29,6 +32,10 @@ namespace PDV.Application.DTOs.Sales
         /// </summary>
         public string CashOperator { get; set; }
 
+        /// <summary>
+        /// Nome do cliente associado à venda, se houver.
+        /// </summary>
+        public string CustomerName { get; set; }
 
         /// <summary>
         /// Lista de produtos incluídos na venda.

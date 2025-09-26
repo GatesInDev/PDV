@@ -1,5 +1,8 @@
 ﻿namespace PDV.Core.Entities
 {
+    /// <summary>
+    /// Entidade que representa uma categoria de produtos.
+    /// </summary>
     public class Category
     {
         /// <summary>

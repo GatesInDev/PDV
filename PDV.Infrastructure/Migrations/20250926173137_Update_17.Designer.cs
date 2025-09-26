@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PDV.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using PDV.Infrastructure.Data;
 namespace PDV.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250926173137_Update_17")]
+    partial class Update_17
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,9 +95,6 @@ namespace PDV.Infrastructure.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -102,9 +102,6 @@ namespace PDV.Infrastructure.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("SaleId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -160,9 +157,6 @@ namespace PDV.Infrastructure.Migrations
                     b.Property<Guid>("CashSessionId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("PaymentMethod")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -176,8 +170,6 @@ namespace PDV.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CashSessionId");
-
-                    b.HasIndex("CustomerId");
 
                     b.ToTable("Sales");
                 });
@@ -278,14 +270,7 @@ namespace PDV.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PDV.Core.Entities.Customer", "Customer")
-                        .WithMany("Sales")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.Navigation("CashSession");
-
-                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("PDV.Core.Entities.Stock", b =>
@@ -337,11 +322,6 @@ namespace PDV.Infrastructure.Migrations
             modelBuilder.Entity("PDV.Core.Entities.Category", b =>
                 {
                     b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("PDV.Core.Entities.Customer", b =>
-                {
-                    b.Navigation("Sales");
                 });
 
             modelBuilder.Entity("PDV.Core.Entities.Product", b =>

@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PDV.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Repositório para operações relacionadas ao estoque.
+    /// </summary>
     public class StockRepository : IStockRepository
     {
         private readonly AppDbContext _context;

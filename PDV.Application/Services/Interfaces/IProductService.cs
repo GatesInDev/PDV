@@ -2,6 +2,9 @@
 
 namespace PDV.Application.Services.Interfaces
 {
+    /// <summary>
+    /// Interface para o serviço de produtos.
+    /// </summary>
     public interface IProductService
     {
         /// <summary>

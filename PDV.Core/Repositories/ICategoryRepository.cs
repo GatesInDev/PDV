@@ -2,6 +2,9 @@
 
 namespace PDV.Core.Repositories
 {
+    /// <summary>
+    /// Interface para o repositório de categorias.
+    /// </summary>
     public interface ICategoryRepository
     {
         /// <summary>

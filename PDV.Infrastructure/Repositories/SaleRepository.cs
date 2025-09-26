@@ -5,6 +5,9 @@ using PDV.Infrastructure.Data;
 
 namespace PDV.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Repositório para operações relacionadas a vendas.
+    /// </summary>
     public class SaleRepository : ISaleRepository
     {
         private readonly AppDbContext _context;
@@ -37,19 +40,42 @@ namespace PDV.Infrastructure.Repositories
         public async Task<Sale> GetByIdAsync(Guid id)
         {
             return await _context.Sales
-         .Include(s => s.SaleProducts)
-             .ThenInclude(sp => sp.Product)
-         .FirstOrDefaultAsync(s => s.Id == id);
+                                     .Include(s => s.SaleProducts)
+                                         .ThenInclude(sp => sp.Product)
+                                     .Include(cs => cs.CashSession)
+                                     .Include(cn => cn.Customer)
+                                     .FirstOrDefaultAsync(s => s.Id == id) ?? null!;
         }
 
+        /// <summary>
+        /// Retorna todas as vendas em um período.
+        /// </summary>
+        /// <param name="startDate">Data de inicio do filtro.</param>
+        /// <param name="endDate">Data de fim do filtro.</param>
+        /// <returns>Lista com as vendas do periodo.</returns>
         public async Task<List<Sale>> GetByPeriodAsync(DateTime startDate, DateTime endDate)
         {
              return await _context.Sales
-                .Include(s => s.SaleProducts)
-                    .ThenInclude(sp => sp.Product)
-                .Where(s => s.SaleDate >= startDate && s.SaleDate <= endDate)
-                .OrderByDescending(s => s.SaleDate)
-                .ToListAsync();
+                                    .Include(s => s.SaleProducts)
+                                        .ThenInclude(sp => sp.Product)
+                                    .Include(cs => cs.CashSession)
+                                    .Include(cn => cn.Customer)
+                                    .Where(s => s.SaleDate >= startDate && s.SaleDate <= endDate)
+                                    .OrderByDescending(s => s.SaleDate)
+                                    .ToListAsync();
+        }
+
+        /// <summary>
+        /// Retorna todas as vendas de um cliente específico.
+        /// </summary>
+        /// <param name="customerId">Identificador do cliente.</param>
+        /// <returns>uma lista com as compras do cliente.</returns>
+        public async Task<List<Sale>> GetSaleByCostumerAsync(Guid customerId)
+        {
+            return await _context.Sales
+                                    .Include(p => p.SaleProducts)
+                                    .Where(s => s.CustomerId == customerId)
+                                    .ToListAsync();
         }
     }
 }

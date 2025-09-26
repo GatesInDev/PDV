@@ -1,5 +1,8 @@
 ﻿namespace PDV.Application.DTOs.StockTransaction
 {
+    /// <summary>
+    /// DTO para representar transações de estoque.
+    /// </summary>
     public class StockTransactionDTO
     {
         /// <summary>

@@ -3,6 +3,9 @@ using PDV.Core.Entities;
 
 namespace PDV.Application.Services.Interfaces
 {
+    /// <summary>
+    /// Interface para o serviço de transações de estoque.
+    /// </summary>
     public interface IStockTransactionService
     {
         /// <summary>

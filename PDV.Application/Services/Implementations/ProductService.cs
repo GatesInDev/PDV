@@ -8,6 +8,9 @@ using AutoMapper; // Para ter acesso ao AutoMapper
 
 namespace PDV.Application.Services.Implementations
 {
+    /// <summary>
+    /// Serviço para operações relacionadas a produtos.
+    /// </summary>
     public class ProductService : IProductService
         {
         private readonly IProductRepository _productRepository;
@@ -62,7 +65,6 @@ namespace PDV.Application.Services.Implementations
             product.Id = Guid.NewGuid();
             product.CreatedAt = DateTime.UtcNow;
             product.IsActive = true;
-            product.SaleQuantity = 0;
 
             try
             {

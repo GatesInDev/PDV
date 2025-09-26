@@ -6,6 +6,9 @@ using PDV.Core.Repositories;
 
 namespace PDV.Application.Services.Implementations
 {
+    /// <summary>
+    /// Serviço para operações relacionadas ao estoque.
+    /// </summary>
     public class StockService : IStockService
     {
         private readonly IMapper _mapper;
