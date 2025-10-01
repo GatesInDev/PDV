@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using PDV.Application.DTOs.Cash;
 using PDV.Application.Services.Interfaces;
 using PDV.Core.Entities;
@@ -13,16 +14,19 @@ namespace PDV.Application.Services.Implementations
     {
         private readonly ICashSessionRepository _repository;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAcessor;
 
         /// <summary>
         /// Construtor do serviço de caixa.
         /// </summary>
         /// <param name="repository">Repositório da sessão de caixa.</param>
         /// <param name="mapper">DI do AutoMapper.</param>
-        public CashService(ICashSessionRepository repository, IMapper mapper)
+        /// <param name="contextAccessor">Acesso aos dados do Jwt Bearer.</param>
+        public CashService(ICashSessionRepository repository, IMapper mapper, IHttpContextAccessor contextAccessor)
         {
             _repository = repository;
             _mapper = mapper;
+            _httpContextAcessor = contextAccessor;
         }
 
         /// <summary>
@@ -33,20 +37,32 @@ namespace PDV.Application.Services.Implementations
         /// <exception cref="Exception">Já existe um caixa aberto.</exception>
         public async Task<Guid> OpenCash(OpenCashSessionDTO dto)
         {
-            var existing = await _repository.GetOpenSessionAsync();
-            if (existing != null)
-                throw new Exception("Já existe um caixa aberto.");
-
-            var session = new CashSession
+            try
             {
-                Id = Guid.NewGuid(),
-                OperatorName = dto.OperatorName,
-                OpeningAmount = dto.OpeningAmount,
-                OpenedAt = DateTime.Now
-            };
+                var existing = await _repository.GetOpenSessionAsync();
 
-            await _repository.AddAsync(session);
-            return session.Id;
+                if (existing != null)
+                    throw new Exception("Já existe um caixa aberto.");
+
+                var session = new CashSession
+                {
+                    Id = Guid.NewGuid(),
+                    OperatorName = _httpContextAcessor.HttpContext?.User?.Identity?.Name ?? throw new Exception("Operador Inválido."),
+                    OpeningAmount = dto.OpeningAmount,
+                    OpenedAt = DateTime.Now
+                };
+
+                if (session.OpeningAmount < 0)
+                    throw new Exception("Valor de abertura inválido.");
+
+                    await _repository.AddAsync(session);
+                    return session.Id;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao abrir o caixa: " + ex.Message);
+            }
+
         }
 
         /// <summary>
@@ -57,16 +73,25 @@ namespace PDV.Application.Services.Implementations
         /// <exception cref="Exception">Erro ao fechar o caixa.</exception>
         public async Task CloseCash(CloseCashSessionDTO dto)
         {
-            var session = await _repository.GetByIdAsync(dto.Id);
-            if (session == null)
-                throw new Exception("Caixa não encontrado.");
-            if (session.ClosedAt != null)
-                throw new Exception("Caixa já foi fechado.");
+            try
+            {
+                var session = await _repository.GetByIdAsync(dto.Id);
 
-            session.ClosingAmount = dto.ClosingAmount;
-            session.ClosedAt = DateTime.Now;
+                if (session == null)
+                    throw new Exception("Caixa não encontrado.");
 
-            await _repository.UpdateAsync(session);
+                if (session.ClosedAt != null)
+                    throw new Exception("Caixa já foi fechado.");
+
+                session.ClosingAmount = await _repository.SumOfCashSession(dto.Id);
+                session.ClosedAt = DateTime.Now;
+
+                await _repository.UpdateAsync(session);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao fechar o caixa: " + ex.Message);
+            }
         }
 
         /// <summary>
@@ -76,7 +101,19 @@ namespace PDV.Application.Services.Implementations
         /// <returns>Objeto com os dados do caixa.</returns>
         public async Task<CashSession?> GetCashById(Guid id)
         {
-            return await _repository.GetByIdAsync(id);
+            try
+            {
+                var session = await _repository.GetByIdAsync(id);
+
+                if (session == null)
+                    throw new Exception("Caixa não encontrado.");
+
+                return session;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao recuperar o caixa: " + ex.Message);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PDV.Application.Services.Interfaces;
 
 namespace PDV.API.Controllers
@@ -26,6 +27,7 @@ namespace PDV.API.Controllers
         /// </summary>
         /// <param name="id">Identificador do produto.</param>
         /// <returns>Estoque do produto em especifico retornado com sucesso.</returns>
+        [Authorize(Roles = "Administrador,Operador,Estoquista")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetStockByProductId(Guid id)
         {

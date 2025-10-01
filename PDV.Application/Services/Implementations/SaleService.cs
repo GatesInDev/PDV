@@ -44,63 +44,81 @@ namespace PDV.Application.Services.Implementations
         /// <exception cref="Exception">Produto não encontrado para criar a venda.</exception>
         public async Task CreateSale(CreateSalesDTO dto)
         {
-            var openCash = await _cashSessionRepository.GetOpenSessionAsync();
-            if (openCash == null)
+            try
             {
-                throw new Exception("Não há caixa aberto para registrar a venda.");
-            }
-
-            var sale = _mapper.Map<Sale>(dto);
-            sale.Id = Guid.NewGuid();
-            sale.SaleDate = DateTime.Now;
-            sale.SaleProducts = new List<SaleProduct>();
-
-            sale.CashSessionId = openCash.Id;   
-
-            decimal totalPrice = 0;
-
-            foreach (var item in dto.Products)
-            {
-                var product = await _productRepository.GetByIdAsync(item.ProductId);
-                if (product == null)
+                var openCash = await _cashSessionRepository.GetOpenSessionAsync();
+                if (openCash == null)
                 {
-                    throw new Exception($"Produto com ID {item.ProductId} não encontrado.");
+                    throw new Exception("Não há caixa aberto para registrar a venda.");
                 }
 
-                var saleProduct = new SaleProduct
+                var sale = _mapper.Map<Sale>(dto);
+
+                if (sale == null)
+                    throw new Exception("Erro ao mapear a venda.");
+
+                sale.Id = Guid.NewGuid();
+                sale.SaleDate = DateTime.Now;
+                sale.SaleProducts = new List<SaleProduct>();
+
+                sale.CashSessionId = openCash.Id;   
+
+                decimal totalPrice = 0;
+
+                foreach (var item in dto.Products)
                 {
-                    ProductId = product.Id,
-                    Quantity = item.Quantity,
-                    PriceAtSaleTime = product.Price
-                };
+                    var product = await _productRepository.GetByIdAsync(item.ProductId);
+                    
+                    if (product == null)
+                        throw new Exception($"Produto com ID {item.ProductId} não encontrado.");
 
-                sale.SaleProducts.Add(saleProduct);
+                    var saleProduct = new SaleProduct
+                    {
+                        ProductId = product.Id,
+                        Quantity = item.Quantity,
+                        PriceAtSaleTime = product.Price
+                    };
 
-                totalPrice += product.Price * item.Quantity;
+                    sale.SaleProducts.Add(saleProduct);
 
-                var stockTransactionDto = new CreateStockTransactionDTO
-                {
-                    ProductId = product.Id,
-                    QuantityChanged = -item.Quantity,
-                    Type = "Sale",
-                    Reason = $"Venda realizada em {sale.SaleDate}, Operador: {openCash.OperatorName}"
-                };
-                await _stockTransactionService.CreateTransaction(stockTransactionDto);
+                    totalPrice += product.Price * item.Quantity;
 
-                var stock = await _stockService.GetStockByProductId(product.Id);
+                    if (totalPrice < 0)
+                        throw new Exception("O valor do produto não deve ser negativo.");
 
-                var stockUpdate = new UpdateStockDTO
-                {
-                    ProductId = product.Id,
-                    Quantity = stock.Quantity - item.Quantity,
-                    MetricUnit = stock.MetricUnit
-                };
-                await _stockService.UpdateStock(stockUpdate);
+                    var stockTransactionDto = new CreateStockTransactionDTO
+                    {
+                        ProductId = product.Id,
+                        QuantityChanged = -item.Quantity,
+                        Type = "Sale",
+                        Reason = $"Venda realizada em {sale.SaleDate}, Operador: {openCash.OperatorName}"
+                    };
+
+                    await _stockTransactionService.CreateTransaction(stockTransactionDto);
+
+                    var stock = await _stockService.GetStockByProductId(product.Id);
+
+                    if (stock == null)
+                        throw new Exception("Erro ao requisitar estoque.");
+
+                    var stockUpdate = new UpdateStockDTO
+                    {
+                        ProductId = product.Id,
+                        Quantity = stock.Quantity - item.Quantity,
+                        MetricUnit = stock.MetricUnit
+                    };
+
+                    await _stockService.UpdateStock(stockUpdate);
+                }
+
+                sale.TotalPrice = totalPrice;
+
+                await _saleRepository.AddAsync(sale);
             }
-
-            sale.TotalPrice = totalPrice;
-
-            await _saleRepository.AddAsync(sale);
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao criar a venda: " + ex.Message);
+            }
         }
 
         /// <summary>

@@ -38,14 +38,24 @@ namespace PDV.Application.Services.Implementations
         /// <exception cref="Exception">Não foi possivel encontrar o produto.</exception>
         public async Task<ProductDetailsDTO> GetByIdAsync(Guid id)
         {
-            var product = await _productRepository.GetByIdAsync(id);
-
-            if (product == null)
+            try
             {
-                throw new Exception("Produto não encontrado.");
-            }
+                var product = await _productRepository.GetByIdAsync(id);
 
-            return _mapper.Map<ProductDetailsDTO>(product);
+                if (product == null)
+                        throw new Exception("Produto não encontrado.");
+
+                var map = _mapper.Map<ProductDetailsDTO>(product);
+
+                if (map == null)
+                    throw new Exception("Erro ao mapear o produto.");
+
+                return map;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao recuperar o produto: " + ex.Message);
+            }   
         }
 
         /// <summary>
@@ -56,18 +66,21 @@ namespace PDV.Application.Services.Implementations
         /// <exception cref="Exception"></exception>
         public async Task<Guid> CreateAsync(CreateProductDTO dto)
         {
-            if (await _productRepository.SkuExistsAsync(dto.Sku))
-            {
-                throw new Exception("SKU já existe.");
-            }
-
-            var product = _mapper.Map<Product>(dto);
-            product.Id = Guid.NewGuid();
-            product.CreatedAt = DateTime.UtcNow;
-            product.IsActive = true;
-
             try
             {
+                if (await _productRepository.SkuExistsAsync(dto.Sku))
+                        throw new Exception("SKU já existe.");
+
+                var product = _mapper.Map<Product>(dto);
+
+                if (product == null)
+                    throw new Exception("Erro ao mapear o produto.");
+                
+                product.Id = Guid.NewGuid();
+                product.CreatedAt = DateTime.UtcNow;
+                product.IsActive = true;
+
+
                 await _productRepository.AddAsync(product);
 
                 var stockDto = new CreateStockDTO
@@ -76,6 +89,9 @@ namespace PDV.Application.Services.Implementations
                     ProductId = product.Id,
                     Quantity = dto.Quantity,
                 };
+
+                if (stockDto == null)
+                    throw new Exception("Erro ao mapear o estoque.");
 
                 await _stockService.CreateAsync(stockDto);
 
@@ -96,30 +112,32 @@ namespace PDV.Application.Services.Implementations
         /// <exception cref="Exception">Erro ao atualizar o produto.</exception>
         public async Task<Guid> UpdateAsync(Guid id, UpdateProductDTO dto)
         {
-            var existingProduct = await _productRepository.GetByIdAsync(id);
-
-            if (existingProduct == null)
-            {
-                throw new Exception("Produto não encontrado.");
-            }
-
-            if (existingProduct.Sku != dto.Sku && await _productRepository.SkuExistsAsync(dto.Sku))
-            {
-                throw new Exception("SKU já existe.");
-            }
-
-            _mapper.Map(dto, existingProduct);
-            existingProduct.UpdatedAt = DateTime.UtcNow;
-            existingProduct.IsActive = true;
-
             try
             {
+                var existingProduct = await _productRepository.GetByIdAsync(id);
+
+                if (existingProduct == null)
+                    throw new Exception("Produto não encontrado.");
+
+                if (!existingProduct.IsActive)
+                    throw new Exception("Produto está desativado e não pode ser atualizado.");
+
+                if (existingProduct.Sku != dto.Sku && await _productRepository.SkuExistsAsync(dto.Sku))
+                    throw new Exception("SKU já existe.");
+
+                _mapper.Map(dto, existingProduct);
+                existingProduct.UpdatedAt = DateTime.UtcNow;
+
+                if (existingProduct == null)
+                    throw new Exception("Erro ao mapear o produto.");
+
                 await _productRepository.UpdateAsync(existingProduct);
+
                 return existingProduct.Id;
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao atualizar o produto no banco de dados.", ex);
+                throw new Exception("Erro ao atualizar o produto no banco de dados: " + ex.Message);
             }
         }
 
@@ -129,8 +147,24 @@ namespace PDV.Application.Services.Implementations
         /// <returns>Uma lista com todos os produtos.</returns>
         public async Task<List<ProductDTO>> GetAllAsync()
         {
-            var products = await _productRepository.GetAllAsync();
-            return _mapper.Map<List<ProductDTO>>(products);
+            try
+            {
+                var products = await _productRepository.GetAllAsync();
+
+                if (products == null || !products.Any())
+                    throw new Exception("Nenhum produto encontrado.");
+
+                var map = _mapper.Map<List<ProductDTO>>(products);
+
+                if (map == null)
+                    throw new Exception("Erro ao mapear os produtos.");
+
+                return map;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao recuperar os produtos: " + ex.Message);
+            }
         }
 
         /// <summary>
@@ -140,8 +174,24 @@ namespace PDV.Application.Services.Implementations
         /// <returns>Uma lista com todos os produtos pertencesteas aquela categoria.</returns>
         public async Task<List<ProductDTO>> GetByCategoryAsync(string category)
         {
-            var products = await _productRepository.GetByCategory(category);
-            return _mapper.Map<List<ProductDTO>>(products);
+            try
+            {
+                var products = await _productRepository.GetByCategory(category);
+
+                if (products == null || !products.Any())
+                    throw new Exception("Nenhum produto encontrado.");
+
+                var map = _mapper.Map<List<ProductDTO>>(products);
+
+                if (map == null)
+                    throw new Exception("Erro ao mapear os produtos.");
+
+                return map;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("Erro a recuperar os produtos: " + ex.Message);
+            }
         }
 
         /// <summary>
@@ -152,21 +202,26 @@ namespace PDV.Application.Services.Implementations
         /// <exception cref="Exception"></exception>
         public async Task<bool> DisableProductAsync(Guid id)
         {
-            var existingProduct = await _productRepository.GetByIdAsync(id);
-            if (existingProduct == null)
-            {
-                throw new Exception("Produto não encontrado.");
-            }
-            existingProduct.IsActive = false;
-            existingProduct.UpdatedAt = DateTime.UtcNow;
             try
             {
+                var existingProduct = await _productRepository.GetByIdAsync(id);
+
+                if (existingProduct == null)
+                    throw new Exception("Produto não encontrado.");
+
+                if (existingProduct.IsActive == false)
+                    throw new Exception("Produto já desabilitado.");
+
+                existingProduct.IsActive = false;
+                existingProduct.UpdatedAt = DateTime.UtcNow;
+
                 await _productRepository.UpdateAsync(existingProduct);
+
                 return true;
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao desativar o produto no banco de dados.", ex);
+                throw new Exception("Erro ao desativar o produto no banco de dados: " + ex.Message);
             }
         }
     }

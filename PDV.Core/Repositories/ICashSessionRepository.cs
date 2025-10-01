@@ -33,5 +33,7 @@ namespace PDV.Core.Repositories
         /// <param name="session">Objeto com os dados a serem atualizados.</param>
         /// <returns>Sem retorno.</returns>
         Task UpdateAsync(CashSession session);
+
+        Task<decimal> SumOfCashSession(Guid Id);
     }
 }

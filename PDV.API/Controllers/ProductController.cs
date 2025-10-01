@@ -2,6 +2,7 @@
 using PDV.Application.DTOs.Product; // Para ter acesso as DTOs de Product
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PDV.API.Controllers
 {
@@ -31,6 +32,7 @@ namespace PDV.API.Controllers
         /// <returns>Produto encontrado e seus dados completos retornados.</returns>
         /// <response code="200">Produto recuperado com sucesso.</response>
         /// <response code="400">Erro na requisição, dados inválidos.</response>
+        [Authorize(Roles = "Administrador,Operador")]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ProductDetailsDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
@@ -54,6 +56,7 @@ namespace PDV.API.Controllers
         /// <returns>Produto novo criado com todos seus dados completos.</returns>
         /// <response code="201">Produto criado com sucesso.</response>
         /// <response code="400">Erro na requisição, dados inválidos.</response>
+        [Authorize(Roles = "Administrador,Estoquista")]
         [HttpPost]
         [ProducesResponseType(typeof(ProductDetailsDTO), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
@@ -80,6 +83,7 @@ namespace PDV.API.Controllers
         /// <returns>Produto encontrado e seus dados substituidos.</returns>
         /// <response code="200">Produto atualizado com sucesso.</response>
         /// <response code="400">Erro na requisição, dados inválidos.</response>
+        [Authorize(Roles = "Administrador,Estoquista")]
         [HttpPost("{id}")]
         [ProducesResponseType(typeof(ProductDetailsDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
@@ -103,6 +107,7 @@ namespace PDV.API.Controllers
         /// <returns>Lista de produtos encontrados e seus dados resumidos retornados.</returns>
         /// <response code="200">Produtos retornados com sucesso.</response>
         /// <response code="400">Erro na requisição, dados inválidos.</response>
+        [Authorize(Roles = "Administrador,Operador,Estoquista")]
         [HttpGet]
         [ProducesResponseType(typeof(List<ProductDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
@@ -125,6 +130,7 @@ namespace PDV.API.Controllers
         /// <returns>Lista de produtos encontrados e seus dados resumidos retornados.</returns>
         /// <response code="200">Produtos retornados com sucesso.</response>
         /// <response code="400">Erro na requisição, dados inválidos.</response>
+        [Authorize(Roles = "Administrador,Operador,Estoquista")]
         [HttpGet("Categories/{category}")]
         [ProducesResponseType(typeof(List<ProductDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
@@ -146,6 +152,7 @@ namespace PDV.API.Controllers
         /// </summary>
         /// <param name="id">Identificador do produto a ser desabilitado.</param>
         /// <returns>Sucesso ao desabilitar um produto.</returns>
+        [Authorize(Roles = "Administrador,Estoquista")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DisableProduct([FromRoute] Guid id)
         {

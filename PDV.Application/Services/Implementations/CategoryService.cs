@@ -34,12 +34,27 @@ namespace PDV.Application.Services.Implementations
         /// <exception cref="Exception">Erro ao encontrar a Categoria.</exception>
         public async Task<CategoryDetailsDTO> GetByIdAsync(int id)
         {
-            var category = await _repository.GetByIdAsync(id);
-            if (category == null)
+            try
             {
-                throw new Exception("Categoria não encontrada.");
+                var category = await _repository.GetByIdAsync(id);
+
+                if (category == null)
+                    throw new Exception("Categoria não encontrada.");
+                
+                var map = _mapper.Map<CategoryDetailsDTO>(category);
+
+                if (map == null)
+                    throw new Exception("Erro ao mapear a categoria.");
+
+                if (!map.IsActive)
+                    throw new Exception("Categoria inativa.");
+
+                return map;
             }
-            return _mapper.Map<CategoryDetailsDTO>(category);
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao encontrar a categoria no banco de dados.", ex);
+            }
         }
 
         /// <summary>
@@ -50,19 +65,21 @@ namespace PDV.Application.Services.Implementations
         /// <exception cref="Exception">Erro ao criar a categoria.</exception>
         public async Task<int> CreateAsync(CreateCategoryDTO categoryDto)
         {
-            if (await _repository.NameExistsAsync(categoryDto.Name))
-            {
-                throw new Exception("Nome da categoria já existe.");
-            }
-
-            var category = _mapper.Map<Category>(categoryDto);
-
-            category.CreatedAt = DateTime.UtcNow;
-            category.IsActive = true;
-
             try
             {
+                if (await _repository.NameExistsAsync(categoryDto.Name))
+                        throw new Exception("Nome da categoria já existe.");
+
+                var category = _mapper.Map<Category>(categoryDto);
+
+                category.CreatedAt = DateTime.UtcNow;
+                category.IsActive = true;
+
+                if (category == null)
+                    throw new Exception("Erro ao mapear a categoria.");
+
                 await _repository.AddAsync(category);
+
                 return category.Id;
             }
             catch (Exception ex)
@@ -80,24 +97,26 @@ namespace PDV.Application.Services.Implementations
         /// <exception cref="Exception">Erro ao atualizar a categoria.</exception>
         public async Task<int> UpdateAsync(int id, UpdateCategoryDTO categoryDto)
         {
-            var existingCategory = await _repository. GetByIdAsync(id);
-            if ( existingCategory == null )
-            {
-                throw new Exception("Categoria não encontrada.");
-            }
-            if ( existingCategory.Name != categoryDto.Name && await _repository.NameExistsAsync(categoryDto.Name) )
-            {
-                throw new Exception("Nome da categoria já existe.");
-            }
-
-            _mapper.Map(categoryDto, existingCategory);
-
-            existingCategory.UpdatedAt = DateTime.UtcNow;
-            existingCategory.IsActive = true;
-
             try
             {
+                var existingCategory = await _repository. GetByIdAsync(id);
+
+                if ( existingCategory == null )
+                        throw new Exception("Categoria não encontrada.");
+                
+                if ( existingCategory.Name != categoryDto.Name && await _repository.NameExistsAsync(categoryDto.Name) )
+                        throw new Exception("Nome da categoria já existe.");
+                
+                _mapper.Map(categoryDto, existingCategory);
+
+                existingCategory.UpdatedAt = DateTime.UtcNow;
+                existingCategory.IsActive = true;
+
+                if (existingCategory == null)
+                    throw new Exception("Erro ao mapear a categoria.");
+
                 await _repository.UpdateAsync(existingCategory);
+
                 return existingCategory.Id;
             }
             catch (Exception ex)
@@ -112,8 +131,24 @@ namespace PDV.Application.Services.Implementations
         /// <returns>Uma lista com todas as categorias.</returns>
         public async Task<List<CategoryDTO>> GetAllAsync()
         {
-            var categories = await _repository.GetAllAsync();
-            return _mapper.Map<List<CategoryDTO>>(categories);
+            try
+            {
+                var categories = await _repository.GetAllAsync();
+                
+                if (categories == null || categories.Count == 0)
+                    throw new Exception("Nenhuma categoria encontrada.");
+
+                var map = _mapper.Map<List<CategoryDTO>>(categories);
+
+                if (map == null)
+                    throw new Exception("Erro ao mapear as categorias.");
+
+                return map;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao recuperar as categorias do banco de dados.", ex);
+            }
         }
     }
 }

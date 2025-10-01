@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PDV.Application.DTOs.Customer;
 using PDV.Application.Services.Interfaces;
 
@@ -27,11 +28,19 @@ namespace PDV.API.Controllers
         /// </summary>
         /// <param name="createCustomerDto">Objeto com os dados a serem criados.</param>
         /// <returns>Identificador do Cliente criado.</returns>
+        [Authorize(Roles = "Administrador,Operador")]
         [HttpPost]
         public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomerDTO createCustomerDto)
         {
-            var customer = await _customerService.CreateCustomerAsync(createCustomerDto);
-            return CreatedAtAction(nameof(GetCustomer), new { id = customer }, customer);
+            try
+            {
+                var customer = await _customerService.CreateCustomerAsync(createCustomerDto);
+                return CreatedAtAction(nameof(GetCustomer), new { id = customer }, customer);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         /// <summary>
@@ -39,26 +48,42 @@ namespace PDV.API.Controllers
         /// </summary>
         /// <param name="id">Identificador do cliente.</param>
         /// <returns>Objeto com os dados do cliente.</returns>
+        [Authorize(Roles = "Administrador,Operador")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomer(Guid id)
         {
-            var customer = await _customerService.GetCustomerAsync(id);
-            if (customer == null)
+            try
             {
-                return NotFound();
+                var customer = await _customerService.GetCustomerAsync(id);
+                if (customer == null)
+                {
+                    return NotFound();
+                }
+                return Ok(customer);
             }
-            return Ok(customer);
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         /// <summary>
         /// Retorna todos os clientes.
         /// </summary>
         /// <returns>Uma lista com todos os clientes.</returns>
+        [Authorize(Roles = "Administrador,Operador")]
         [HttpGet]
         public async Task<IActionResult> GetAllCustomers()
         {
-            var customers = await _customerService.GetAllCustomersAsync();
-            return Ok(customers);
+            try
+            {
+                var customers = await _customerService.GetAllCustomersAsync();
+                return Ok(customers);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         /// <summary>
@@ -66,11 +91,19 @@ namespace PDV.API.Controllers
         /// </summary>
         /// <param name="id">Identificador do Cliente.</param>
         /// <returns>Uma lista com todas suas compras.</returns>
+        [Authorize(Roles = "Administrador,Operador")]
         [HttpGet("{id}/sales")]
         public async Task<IActionResult> GetSalesHistoryById(Guid id)
         {
-            var customers = await _customerService.GetSalesByCostumer(id);
-            return Ok(customers);
+            try
+            {
+                var customers = await _customerService.GetSalesByCostumer(id);
+                return Ok(customers);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

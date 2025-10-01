@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PDV.Application.DTOs.Sales;
+using PDV.Application.Services.Interfaces;
 using PDV.Core.Entities;
 using PDV.Core.Repositories;
-using PDV.Application.Services.Interfaces;
 
 
 namespace PDV.API.Controllers
@@ -33,6 +34,7 @@ namespace PDV.API.Controllers
         /// <returns>Venda criada, subtraida do estoque, e registrada nas transações.</returns>
         /// <response code="200">Venda criada com sucesso.</response>
         /// <response code="400">Erro na requisição, dados inválidos.</response>
+        [Authorize(Roles = "Administrador,Operador")]
         [HttpPost]
         public async Task<IActionResult> CreateSale([FromBody] CreateSalesDTO dto)
         {
@@ -52,6 +54,7 @@ namespace PDV.API.Controllers
         /// </summary>
         /// <param name="id">Identificador da venda.</param>
         /// <returns>Os dados da venda.</returns>
+        [Authorize(Roles = "Administrador,Operador")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSaleById(Guid id)
         {
@@ -72,6 +75,7 @@ namespace PDV.API.Controllers
         /// <param name="startDate">Data inicial de filtragem.</param>
         /// <param name="endDate">Data final de filtragem.</param>
         /// <returns>Uma lista com objetos dentro deste periodo.</returns>
+        [Authorize(Roles = "Administrador,Operador")]
         [HttpGet]
         public async Task<IActionResult> GetSaleByPeriod([FromQuery]DateTime startDate, [FromQuery]DateTime endDate)
         {

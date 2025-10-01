@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PDV.Application.DTOs.StockTransaction;
 using PDV.Application.Services.Interfaces;
@@ -28,6 +29,7 @@ namespace PDV.API.Controllers
         /// Retorna todas as transações de estoque.
         /// </summary>
         /// <returns>Sucesso ao retonar todas as transações.</returns>
+        [Authorize(Roles = "Administrador,Estoquista")]
         [HttpGet]
         public async Task<IActionResult> GetHistory()
         {
@@ -47,6 +49,7 @@ namespace PDV.API.Controllers
         /// </summary>
         /// <param name="id">Identificador da transação.</param>
         /// <returns>Sucesso ao retornar a transação especificada.</returns>
+        [Authorize(Roles = "Administrador,Estoquista")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -66,6 +69,7 @@ namespace PDV.API.Controllers
         /// </summary>
         /// <param name="stock">Objeto com os dados para criar a transação</param>
         /// <returns>Sucesso com os dados criados.</returns>
+        [Authorize(Roles = "Administrador,Estoquista")]
         [HttpPost]
         public async Task<IActionResult> CreateTransaction([FromBody] CreateStockTransactionDTO stock)
         {

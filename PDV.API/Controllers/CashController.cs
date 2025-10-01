@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PDV.Application.DTOs.Cash;
 using PDV.Application.Services.Interfaces;
 
@@ -27,11 +28,19 @@ namespace PDV.API.Controllers
         /// </summary>
         /// <param name="dto">Dados iniciais do caixa a ser aberto.</param>
         /// <returns>Identificador da sessão de caixa.</returns>
+        [Authorize(Roles = "Administrador,Operador")]
         [HttpPost("open")]
         public async Task<IActionResult> OpenCash([FromBody] OpenCashSessionDTO dto)
         {
-            var id = await _cashService.OpenCash(dto);
-            return Ok(new { CashId = id });
+            try
+            {
+                var id = await _cashService.OpenCash(dto);
+                return Ok(new { CashId = id });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         /// <summary>
@@ -39,11 +48,19 @@ namespace PDV.API.Controllers
         /// </summary>
         /// <param name="dto">Objeto com o restante dos dados da sessão do caixa.</param>
         /// <returns>Mensagem de retorno sendo um sucesso.</returns>
+        [Authorize(Roles = "Administrador,Operador")]
         [HttpPost("close")]
         public async Task<IActionResult> CloseCash([FromBody] CloseCashSessionDTO dto)
         {
-            await _cashService.CloseCash(dto);
-            return Ok(new { Message = "Caixa fechado com sucesso." });
+            try
+            {
+                await _cashService.CloseCash(dto);
+                return Ok(new { Message = "Caixa fechado com sucesso." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         /// <summary>
@@ -51,14 +68,22 @@ namespace PDV.API.Controllers
         /// </summary>
         /// <param name="id">Identificador da sessão de caixa.</param>
         /// <returns>Objeto com os dados dessa sessão.</returns>
+        [Authorize(Roles = "Administrador")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetCashById(Guid id)
         {
-            var session = await _cashService.GetCashById(id);
-            if (session == null)
-                return NotFound();
+            try
+            {
+                var session = await _cashService.GetCashById(id);
+                if (session == null)
+                    return NotFound();
 
-            return Ok(session);
+                return Ok(session);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

@@ -16,6 +16,7 @@ namespace PDV.Infrastructure.Data
         public DbSet<StockTransaction> StockTransactions => Set<StockTransaction>();
         public DbSet<Sale> Sales => Set<Sale>();
         public DbSet<Customer> Customers => Set<Customer>();
+        public DbSet<User> Users => Set<User>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -42,6 +42,7 @@ namespace PDV.Infrastructure.Repositories
             return await _context.Set<CashSession>()
                                  .Include(c => c.Sales)
                                  .ThenInclude(sp => sp.SaleProducts)
+
                                  .FirstOrDefaultAsync(c => c.Id == id);
         }
 
@@ -64,6 +65,13 @@ namespace PDV.Infrastructure.Repositories
         {
             _context.Set<CashSession>().Update(session);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<decimal> SumOfCashSession(Guid id)
+        {
+            return await _context.Set<Sale>()
+                                 .Where(s => s.CashSessionId == id)
+                                 .SumAsync(s => s.TotalPrice);
         }
     }
 }

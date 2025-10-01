@@ -1,7 +1,7 @@
-﻿using PDV.Application.DTOs.Category; // Para ter acesso as DTOs de Category
-using PDV.Application.Services.Interfaces; // Para ter acesso a interface ICategoryService
-
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc; // Para ter acesso aos atributos de Controller
+using PDV.Application.DTOs.Category; // Para ter acesso as DTOs de Category
+using PDV.Application.Services.Interfaces; // Para ter acesso a interface ICategoryService
 
 namespace PDV.API.Controllers
 {
@@ -30,6 +30,7 @@ namespace PDV.API.Controllers
         /// <returns>Categoria encontrada e seus dados completos retornados.</returns>
         /// <response code="200">Categoria recuperado com sucesso.</response>
         /// <response code="400">Erro na requisição, dados inválidos.</response>
+        [Authorize(Roles = "Administrador,Operador,Estoquista")]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(CategoryDetailsDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
@@ -53,6 +54,7 @@ namespace PDV.API.Controllers
         /// <returns>Categoria criada com os detalhes completos.</returns>
         /// <response code="201">Categoria criada com sucesso.</response>
         /// <response code="400">Erro na requisição, dados inválidos.</response>
+        [Authorize(Roles = "Administrador,Estoquista")]
         [HttpPost]
         [ProducesResponseType(typeof(CategoryDetailsDTO), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
@@ -79,6 +81,7 @@ namespace PDV.API.Controllers
         /// <returns>Categoria atualizada com os detalhes completos.</returns>
         /// <response code="200">Categoria atualizada com sucesso.</response>
         /// <response code="400">Erro na requisição, dados inválidos.</response>
+        [Authorize(Roles = "Administrador,Estoquista")]
         [HttpPost("{id}")]
         [ProducesResponseType(typeof(CategoryDetailsDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
@@ -102,6 +105,7 @@ namespace PDV.API.Controllers
         /// <returns>Categorias resumidas retornadas com sucesso.</returns>
         /// <response code="200">Categorias recuperadas com sucesso.</response>
         /// <response code="400">Erro na requisição, dados inválidos.</response>
+        [Authorize(Roles = "Administrador,Operador,Estoquista")]
         [HttpGet]
         [ProducesResponseType(typeof(List<CategoryDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]

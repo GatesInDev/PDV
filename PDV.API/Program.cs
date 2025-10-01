@@ -1,13 +1,38 @@
-using PDV.Core.Repositories; // Para ter acesso as interfaces de repositório
-using PDV.Application.Services.Interfaces; // Para ter acesso as interfaces de serviço
+using Microsoft.AspNetCore.Authentication.JwtBearer; // Para autenticação JWT
+using Microsoft.EntityFrameworkCore; // Para ter acesso ao DbContext e DbSet
+using Microsoft.IdentityModel.Tokens; // Para validação de tokens
+using PDV.Application.Mappings; // Para ter acesso ao AutoMapper profiles
 using PDV.Application.Services.Implementations; // Para ter acesso as implementações de serviço
+using PDV.Application.Services.Interfaces; // Para ter acesso as interfaces de serviço
+using PDV.Core.Repositories; // Para ter acesso as interfaces de repositório
 using PDV.Infrastructure.Data;  // Para ter acesso ao AppDbContext
 using PDV.Infrastructure.Repositories; // Para ter acesso as implementações de repositório
-using PDV.Application.Mappings; // Para ter acesso ao AutoMapper profiles
-
-using Microsoft.EntityFrameworkCore; // Para ter acesso ao DbContext e DbSet
+using System.Text; // Para Encoding
 
 var builder = WebApplication.CreateBuilder(args);
+
+var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false; // em produção, usar true
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+});
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<IProductService, ProductService>();
@@ -24,6 +49,9 @@ builder.Services.AddScoped<ICashService, CashService>();
 builder.Services.AddScoped<ICashSessionRepository, CashSessionRepository>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IAuth, Auth>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAutoMapper(typeof(StockProfile));
 
@@ -33,6 +61,31 @@ builder.Services.AddSwaggerGen(options =>
 {
     var xmlFilename = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Digite 'Bearer' [espaço] e o token JWT.\n\nExemplo: \"Bearer abc123xyz\""
+    });
+
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
 });
 
 var app = builder.Build();
@@ -41,8 +94,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}     
+}
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
