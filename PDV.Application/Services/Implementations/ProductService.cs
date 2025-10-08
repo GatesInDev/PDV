@@ -79,7 +79,7 @@ namespace PDV.Application.Services.Implementations
                 product.Id = Guid.NewGuid();
                 product.CreatedAt = DateTime.UtcNow;
                 product.IsActive = true;
-
+                product.SaledQuantity = 0;
 
                 await _productRepository.AddAsync(product);
 

@@ -23,6 +23,11 @@
         public decimal Price { get; set; }
 
         /// <summary>
+        /// Quantidade vendida.
+        /// </summary>
+        public int? SaledQuantity { get; set; }
+
+        /// <summary>
         /// True se o produto estiver ativo; caso contrário, false.
         /// </summary>
         public bool IsActive { get; set; }

@@ -72,6 +72,9 @@ namespace PDV.Application.Services.Implementations
                     if (product == null)
                         throw new Exception($"Produto com ID {item.ProductId} não encontrado.");
 
+                    if (product.Stock.Quantity < item.Quantity)
+                        throw new Exception($"Estoque insuficiente, items restantes: {product.Stock.Quantity}");
+
                     var saleProduct = new SaleProduct
                     {
                         ProductId = product.Id,
@@ -109,6 +112,11 @@ namespace PDV.Application.Services.Implementations
                     };
 
                     await _stockService.UpdateStock(stockUpdate);
+
+                    var productUpdate = _mapper.Map<Product>(product);
+                    productUpdate.SaledQuantity += item.Quantity;
+
+                    await _productRepository.UpdateAsync(productUpdate);
                 }
 
                 sale.TotalPrice = totalPrice;

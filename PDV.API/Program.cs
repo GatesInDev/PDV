@@ -49,6 +49,8 @@ builder.Services.AddScoped<ICashService, CashService>();
 builder.Services.AddScoped<ICashSessionRepository, CashSessionRepository>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IMetricsService, MetricsService>();
+builder.Services.AddScoped<IMetricsRepository, MetricsRepository>();
 builder.Services.AddScoped<IAuth, Auth>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddHttpContextAccessor();
