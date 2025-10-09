@@ -10,22 +10,34 @@ using System.IdentityModel.Tokens.Jwt;
 
 namespace PDV.Application.Services.Implementations
 {
+    /// <summary>
+    /// Serviço para autenticação.
+    /// </summary>
     public class Auth : IAuth
     {
         private readonly IAuthRepository _authRepository;
 
+        /// <summary>
+        /// Construtor para a autenticação.
+        /// </summary>
+        /// <param name="authRepository">Repositório da autenticação.</param>
         public Auth(IAuthRepository authRepository)
         {
             _authRepository = authRepository;
         }
 
-
-        public User AuthenticateUser(LoginModel user)
+        /// <summary>
+        /// Serviço para validar a autenticação.
+        /// </summary>
+        /// <param name="user">Objeto com usuario e senha.</param>
+        /// <returns>Objeto com o id e o cargo deste usuario.</returns>
+        /// <exception cref="Exception">Usuario sem cargo válido.</exception>
+        public async Task<User> AuthenticateUser(LoginModel user)
         {
 
-            if (_authRepository.ThisUserExist(user.Username, user.Password))
+            if ( await _authRepository.ThisUserExist(user.Username, user.Password))
             {
-                var role = _authRepository.getRoleByUser(user.Username) ?? throw new Exception("Cargo inválido.");
+                var role = await _authRepository.getRoleByUser(user.Username) ?? throw new Exception("Cargo inválido.");
 
                 return new User { Id = Guid.NewGuid(), 
                     Username = user.Username, 
@@ -35,7 +47,14 @@ namespace PDV.Application.Services.Implementations
             return null;
         }
 
-        public string GenerateToken(string username, string role, string genKey)
+        /// <summary>
+        /// Serviço para gerar o Token JWT.
+        /// </summary>
+        /// <param name="username">Username para qual será destinado o token.</param>
+        /// <param name="role">Cargo deste usuario que o token representará.</param>
+        /// <param name="genKey">Chave de codificação do sistema para a chave.</param>
+        /// <returns>String com o token.</returns>
+        public async Task<string> GenerateToken(string username, string role, string genKey)
         {
             var key = Encoding.UTF8.GetBytes(genKey);
 
@@ -66,6 +85,10 @@ namespace PDV.Application.Services.Implementations
             return $"Bearer {code}";
         }
 
+        /// <summary>
+        /// Retorna todos os usuarios do sistema. Somente Administrador.
+        /// </summary>
+        /// <returns>Lista com todos os usuarios.</returns>
         public async Task<List<User>> GetAllUserAsync()
         {
             return await _authRepository.GetAllUserAsync() ?? throw new Exception();

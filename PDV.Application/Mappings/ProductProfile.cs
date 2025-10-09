@@ -10,18 +10,21 @@ namespace PDV.Application.Mappings
         {
             CreateMap<Product, ProductDTO>()
                 .ForMember(dest => dest.CategoryName,
-                           opt => opt.MapFrom(src => src.Category.Name));
+                            opt => opt.MapFrom(src => src.Category.Name));
 
             CreateMap<Product, ProductDetailsDTO>()
                 .ForMember(dest => dest.CategoryName,
-                           opt => opt.MapFrom(src => src.Category.Name));
+                            opt => opt.MapFrom(src => src.Category.Name));
 
             CreateMap<CreateProductDTO, Product>()
-                    .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId));
+                .ForMember(dest => dest.CategoryId, 
+                            opt => opt.MapFrom(src => src.CategoryId))
+                .ForMember(dest => dest.MetricUnit, 
+                            opt => opt.MapFrom(src => src.MetricUnit));
 
             CreateMap<UpdateProductDTO, Product>()
-                    .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId));
-
+                .ForMember(dest => dest.CategoryId, 
+                            opt => opt.MapFrom(src => src.CategoryId));
         }
     }
 }

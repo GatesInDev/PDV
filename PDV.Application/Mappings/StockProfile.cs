@@ -11,8 +11,10 @@ namespace PDV.Application.Mappings
             CreateMap<CreateStockDTO, Stock>();
 
             CreateMap<Stock, StockDTO>()
-            .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
-            .ForMember(dest => dest.MetricUnit, opt => opt.MapFrom(src => src.Product.MetricUnit));
+                .ForMember(dest => dest.ProductName, 
+                            opt => opt.MapFrom(src => src.Product.Name))
+                .ForMember(dest => dest.MetricUnit, 
+                            opt => opt.MapFrom(src => src.Product.MetricUnit));
 
             CreateMap<UpdateStockDTO, Stock>();
         }

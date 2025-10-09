@@ -19,6 +19,5 @@
         /// Saída do nome do produto.
         /// </summary>
         public string CategoryName { get; set; }
-
     }
 }

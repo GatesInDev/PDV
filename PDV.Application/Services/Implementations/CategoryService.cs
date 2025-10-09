@@ -72,7 +72,9 @@ namespace PDV.Application.Services.Implementations
 
                 var category = _mapper.Map<Category>(categoryDto);
 
+                category.Id = 0;
                 category.CreatedAt = DateTime.UtcNow;
+                category.UpdatedAt = DateTime.UtcNow;
                 category.IsActive = true;
 
                 if (category == null)
@@ -84,7 +86,7 @@ namespace PDV.Application.Services.Implementations
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao criar a categoria no banco de dados.", ex);
+                throw new Exception("Erro ao criar a categoria no banco de dados." + ex.Message);
             }
         }
 
@@ -129,6 +131,7 @@ namespace PDV.Application.Services.Implementations
         /// Retorna todas as categorias.
         /// </summary>
         /// <returns>Uma lista com todas as categorias.</returns>
+        /// <exception cref="Exception">Erro ao recuperar as categorias do banco de dados.</exception>
         public async Task<List<CategoryDTO>> GetAllAsync()
         {
             try

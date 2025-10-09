@@ -41,8 +41,7 @@ namespace PDV.Infrastructure.Repositories
         {
             return await _context.Set<CashSession>()
                                  .Include(c => c.Sales)
-                                 .ThenInclude(sp => sp.SaleProducts)
-
+                                 .ThenInclude(c => c.SaleProducts)
                                  .FirstOrDefaultAsync(c => c.Id == id);
         }
 
@@ -67,6 +66,11 @@ namespace PDV.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Soma todas as vendas da sessão do caixa.
+        /// </summary>
+        /// <param name="id">Identificador do caixa.</param>
+        /// <returns>Valor decimal do total.</returns>
         public async Task<decimal> SumOfCashSession(Guid id)
         {
             return await _context.Set<Sale>()

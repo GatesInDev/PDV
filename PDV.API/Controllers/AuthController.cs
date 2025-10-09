@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using PDV.Application.DTOs;
 using PDV.Application.Services.Interfaces;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -23,8 +24,8 @@ namespace PDV.API.Controllers
         /// <summary>
         /// Construtor do controlador de autenticação.
         /// </summary>
-        /// <param name="config"></param>
-        /// <param name="authService"></param>
+        /// <param name="config">DI para acesso ao appsettings.json</param>
+        /// <param name="authService">Serviço de autenticação.</param>
         public AuthController(IConfiguration config, IAuth authService)
         {
             _config = config;
@@ -34,20 +35,20 @@ namespace PDV.API.Controllers
         /// <summary>
         /// Autentica um usuário e retorna um token JWT se as credenciais forem válidas.
         /// </summary>
-        /// <param name="login"></param>
-        /// <returns></returns>
+        /// <param name="login">Objeto com usuario e senha.</param>
+        /// <returns>Token Bearer JWT</returns>
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginModel login)
+        public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
             IActionResult response = Unauthorized();
 
             try
             {
-                var user = _authService.AuthenticateUser(login);
+                var user = await _authService.AuthenticateUser(login);
 
                 if (user != null)
                 {
-                    var tokenString = GenerateJwtToken(user.Username, user.Role);
+                    var tokenString = _authService.GenerateToken(user.Username, user.Role, _config["Jwt:Key"]);
                     response = Ok(new { token = tokenString });
                 }
                 return response;
@@ -61,7 +62,7 @@ namespace PDV.API.Controllers
         /// <summary>
         /// Retorna todos os usuários do sistema. Apenas acessível por administradores.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Uma lista com todos os usuarios.</returns>
         [Authorize(Roles = "Administrador")]
         [HttpGet("Users")]
         public async Task<IActionResult> GetAllUsers()
@@ -75,18 +76,5 @@ namespace PDV.API.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-
-        private string GenerateJwtToken(string username, string role)
-        {
-            try
-            {
-                return _authService.GenerateToken(username, role, _config["Jwt:Key"]);   
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
     }
 }

@@ -1,10 +1,9 @@
-﻿using PDV.Core.Entities; // Para ter acesso a entidade Product
-using PDV.Core.Repositories; // Para ter acesso as interfaces de repositório
+﻿using AutoMapper; // Para ter acesso ao AutoMapper
 using PDV.Application.DTOs.Product; // Para ter acesso as DTOs de Product
 using PDV.Application.DTOs.Stock; // Para ter acesso as DTOs de Stock
 using PDV.Application.Services.Interfaces;  // Para ter acesso a interface IProductService e IStockService
-
-using AutoMapper; // Para ter acesso ao AutoMapper
+using PDV.Core.Entities; // Para ter acesso a entidade Product
+using PDV.Core.Repositories; // Para ter acesso as interfaces de repositório
 
 namespace PDV.Application.Services.Implementations
 {
@@ -12,8 +11,9 @@ namespace PDV.Application.Services.Implementations
     /// Serviço para operações relacionadas a produtos.
     /// </summary>
     public class ProductService : IProductService
-        {
+    {
         private readonly IProductRepository _productRepository;
+        private readonly IStockRepository _stockRepository;
         private readonly IStockService _stockService;
         private readonly IMapper _mapper;
 
@@ -23,11 +23,12 @@ namespace PDV.Application.Services.Implementations
         /// <param name="productRepository">Repositorio de produtos.</param>
         /// <param name="mapper">Adição do AutoMapper.</param>
         /// <param name="stockService">Serviço do Estoque.</param>
-        public ProductService(IProductRepository productRepository, IMapper mapper, IStockService stockService)
+        public ProductService(IProductRepository productRepository, IMapper mapper, IStockService stockService, IStockRepository stockRepository)
         {
             _productRepository = productRepository;
             _mapper = mapper;
             _stockService = stockService;
+            _stockRepository = stockRepository;
         }
 
         /// <summary>
@@ -43,7 +44,7 @@ namespace PDV.Application.Services.Implementations
                 var product = await _productRepository.GetByIdAsync(id);
 
                 if (product == null)
-                        throw new Exception("Produto não encontrado.");
+                    throw new Exception("Produto não encontrado.");
 
                 var map = _mapper.Map<ProductDetailsDTO>(product);
 
@@ -55,7 +56,7 @@ namespace PDV.Application.Services.Implementations
             catch (Exception ex)
             {
                 throw new Exception("Erro ao recuperar o produto: " + ex.Message);
-            }   
+            }
         }
 
         /// <summary>
@@ -69,37 +70,32 @@ namespace PDV.Application.Services.Implementations
             try
             {
                 if (await _productRepository.SkuExistsAsync(dto.Sku))
-                        throw new Exception("SKU já existe.");
+                    throw new Exception("SKU já existe.");
 
                 var product = _mapper.Map<Product>(dto);
-
-                if (product == null)
-                    throw new Exception("Erro ao mapear o produto.");
-                
                 product.Id = Guid.NewGuid();
                 product.CreatedAt = DateTime.UtcNow;
                 product.IsActive = true;
                 product.SaledQuantity = 0;
 
-                await _productRepository.AddAsync(product);
+                await _productRepository.AddAsync(product); 
 
-                var stockDto = new CreateStockDTO
+                var stock = new Stock
                 {
-                    MetricUnit = product.MetricUnit,
+                    Id = Guid.NewGuid(),
                     ProductId = product.Id,
                     Quantity = dto.Quantity,
+                    MetricUnit = product.MetricUnit,
+                    LastUpdated = DateTime.UtcNow
                 };
 
-                if (stockDto == null)
-                    throw new Exception("Erro ao mapear o estoque.");
-
-                await _stockService.CreateAsync(stockDto);
+                await _stockRepository.CreateAsync(stock); 
 
                 return product.Id;
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao criar o produto ou o estoque.", ex);
+                throw new Exception("Erro ao criar o produto ou o estoque. " + ex.Message, ex);
             }
         }
 
@@ -188,7 +184,7 @@ namespace PDV.Application.Services.Implementations
 
                 return map;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("Erro a recuperar os produtos: " + ex.Message);
             }

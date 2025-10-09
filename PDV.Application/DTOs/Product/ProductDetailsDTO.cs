@@ -49,7 +49,5 @@
         /// Saída do nome da categoria do produto recebido por Join.
         /// </summary>
         public string CategoryName { get; set; }
-
-
     }
 }

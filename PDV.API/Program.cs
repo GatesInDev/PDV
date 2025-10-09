@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer; // Para autenticação JWT
 using Microsoft.EntityFrameworkCore; // Para ter acesso ao DbContext e DbSet
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens; // Para validação de tokens
 using PDV.Application.Mappings; // Para ter acesso ao AutoMapper profiles
 using PDV.Application.Services.Implementations; // Para ter acesso as implementações de serviço
@@ -34,7 +35,12 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
+}, ServiceLifetime.Scoped);
 builder.Services.AddControllers();
+builder.Services.AddScoped<AppDbContext>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -71,7 +77,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Description = "Digite 'Bearer' [espaço] e o token JWT.\n\nExemplo: \"Bearer abc123xyz\""
+        Description = "Exemplo: \"Bearer abc123xyz\""
     });
 
     options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement

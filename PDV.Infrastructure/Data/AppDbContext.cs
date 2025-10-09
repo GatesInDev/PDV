@@ -1,13 +1,17 @@
-﻿using PDV.Core.Entities; // Para ter acesso às entidades
-
-using Microsoft.EntityFrameworkCore; // Para ter acesso ao DbContext e DbSet
+﻿using Microsoft.AspNetCore.Http; // Para ter acesso ao DbContext e DbSet
+using Microsoft.EntityFrameworkCore;
+using PDV.Core.Entities;
+using System.Text.Json; // Para ter acesso às entidades
 
 namespace PDV.Infrastructure.Data
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions options) : base(options)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public AppDbContext(DbContextOptions options, IHttpContextAccessor httpContextAccessor) 
+            : base(options)
         {
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public DbSet<Product> Products => Set<Product>();
@@ -17,13 +21,57 @@ namespace PDV.Infrastructure.Data
         public DbSet<Sale> Sales => Set<Sale>();
         public DbSet<Customer> Customers => Set<Customer>();
         public DbSet<User> Users => Set<User>();
+        public DbSet<Logs> Logss { get; set; }
 
+        private string GetUser()
+        {
+            return _httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "Desconhecido";
+        }
+
+        public override int SaveChanges()
+        {
+            AdicionarAuditoria();
+            return base.SaveChanges();
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            AdicionarAuditoria();
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void AdicionarAuditoria()
+        {
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.Entity is not Logs &&
+                            (e.State == EntityState.Added ||
+                             e.State == EntityState.Modified ||
+                             e.State == EntityState.Deleted))
+                .ToList();
+
+            foreach (var entry in entries)
+            {
+                var auditoria = new Logs
+                {
+                    Table = entry.Entity.GetType().Name,
+                    Action = entry.State.ToString(),
+                    Date = DateTime.UtcNow,
+                    User = GetUser(),
+                    Data = JsonSerializer.Serialize(entry.CurrentValues.ToObject())
+                };
+
+                Logss.Add(auditoria);
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Category>()
+                .HasKey(c => c.Id);
+
+            modelBuilder.Entity<Logs>()
                 .HasKey(c => c.Id);
 
             modelBuilder.Entity<Product>()

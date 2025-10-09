@@ -2,8 +2,14 @@
 {
     public class LoginModel
     {
-        public String Username { get; set; }
-        public String Password { get; set; }
+        /// <summary>
+        /// Entrada do Usuario.
+        /// </summary>
+        public string Username { get; set; }
 
+        /// <summary>
+        /// Entrada da senha do usuario.
+        /// </summary>
+        public string Password { get; set; }
     }
 }

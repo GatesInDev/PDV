@@ -83,7 +83,7 @@ namespace PDV.Application.Services.Implementations
                 if (session.ClosedAt != null)
                     throw new Exception("Caixa já foi fechado.");
 
-                session.ClosingAmount = await _repository.SumOfCashSession(dto.Id);
+                session.ClosingAmount = await _repository.SumOfCashSession(dto.Id) + session.OpeningAmount;
                 session.ClosedAt = DateTime.Now;
 
                 await _repository.UpdateAsync(session);

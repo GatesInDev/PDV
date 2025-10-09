@@ -31,6 +31,7 @@ namespace PDV.Infrastructure.Repositories
         {
             return await _context.Products
                 .Include(p => p.Category)
+                .Include(s => s.Stock)
                 .FirstOrDefaultAsync(p => p.Id == id) ?? null!;
         }
 

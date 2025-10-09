@@ -20,4 +20,8 @@
     <ProjectReference Include="..\PDV.Core\PDV.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

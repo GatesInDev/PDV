@@ -1,9 +1,6 @@
-﻿namespace PDV.Core.Entities
+﻿namespace PDV.Application.DTOs.Metrics
 {
-    /// <summary>
-    /// Entidade que representa o estoque de produtos.
-    /// </summary>
-    public class Stock
+    public class GetBelowStockDTO
     {
         /// <summary>
         /// Identificador único do estoque.
@@ -18,13 +15,12 @@
         /// <summary>
         /// Unidade de medida do produto (Un/Kg/Ml).
         /// </summary>
-        public string? MetricUnit { get; set; }
+        public string MetricUnit { get; set; }
 
         /// <summary>
         /// Timestamp da última atualização do estoque.
         /// </summary>
         public DateTime LastUpdated { get; set; }
-
 
         /// <summary>
         /// Identificador do produto ao qual este estoque pertence.
@@ -32,8 +28,8 @@
         public Guid ProductId { get; set; } // FK
 
         /// <summary>
-        /// Navegação para a entidade Produto.
+        /// Nome do produto.
         /// </summary>
-        public Product Product { get; set; } // Navigation Property
+        public string ProductName { get; set; }
     }
 }

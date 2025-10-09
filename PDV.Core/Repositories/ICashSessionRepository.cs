@@ -3,37 +3,42 @@
 namespace PDV.Core.Repositories
 {
     /// <summary>
-    /// Interface para o repositório de sessões de caixa.
+    /// Interface responsável pelas operações de persistência relacionadas às sessões de caixa.
     /// </summary>
     public interface ICashSessionRepository
     {
         /// <summary>
-        /// Adiciona uma nova sessão de caixa ao repositório.
+        /// Insere uma nova sessão de caixa no repositório.
         /// </summary>
-        /// <param name="session">Objeto com as informações de abertura da sessão.</param>
-        /// <returns>Sem retorno.</returns>
+        /// <param name="session">Objeto <see cref="CashSession"/> contendo os dados da sessão a ser adicionada.</param>
+        /// <returns>Uma tarefa assíncrona que representa a operação.</returns>
         Task AddAsync(CashSession session);
 
         /// <summary>
-        /// Retorna uma sessão de caixa pelo seu Id do repositório.
+        /// Busca uma sessão de caixa pelo seu identificador único.
         /// </summary>
-        /// <param name="id">Identificador da sessão a retornar.</param>
-        /// <returns>Dados da sessão.</returns>
+        /// <param name="id">Identificador <see cref="Guid"/> da sessão.</param>
+        /// <returns>Objeto <see cref="CashSession"/> correspondente, ou <c>null</c> se não encontrado.</returns>
         Task<CashSession?> GetByIdAsync(Guid id);
 
         /// <summary>
-        /// Verifica se existe uma sessão de caixa aberta.
+        /// Obtém a sessão de caixa atualmente aberta, se houver.
         /// </summary>
-        /// <returns>Objeto com os dados da sessão aberta.</returns>
+        /// <returns>Objeto <see cref="CashSession"/> da sessão aberta, ou <c>null</c> se nenhuma estiver aberta.</returns>
         Task<CashSession?> GetOpenSessionAsync();
 
         /// <summary>
-        /// Atualiza os dados de uma sessão de caixa no repositório.
+        /// Atualiza os dados de uma sessão de caixa existente.
         /// </summary>
-        /// <param name="session">Objeto com os dados a serem atualizados.</param>
-        /// <returns>Sem retorno.</returns>
+        /// <param name="session">Objeto <see cref="CashSession"/> com os dados atualizados.</param>
+        /// <returns>Uma tarefa assíncrona que representa a operação.</returns>
         Task UpdateAsync(CashSession session);
 
-        Task<decimal> SumOfCashSession(Guid Id);
+        /// <summary>
+        /// Calcula o valor total movimentado em uma sessão de caixa específica.
+        /// </summary>
+        /// <param name="id">Identificador <see cref="Guid"/> da sessão.</param>
+        /// <returns>Valor total movimentado na sessão.</returns>
+        Task<decimal> SumOfCashSession(Guid id);
     }
 }
