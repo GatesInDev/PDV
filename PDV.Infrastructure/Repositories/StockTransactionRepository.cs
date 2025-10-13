@@ -37,7 +37,7 @@ namespace PDV.Infrastructure.Repositories
         /// <returns>Objeto com os dados da transação.</returns>
         public async Task<StockTransaction> GetById(Guid id)
         {
-            return await _context.StockTransactions.FirstOrDefaultAsync(st => st.Id == id);
+            return await _context.StockTransactions.FirstOrDefaultAsync(st => st.Id == id) ?? null!;
         }
 
         /// <summary>

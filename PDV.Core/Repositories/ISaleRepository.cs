@@ -29,11 +29,5 @@ namespace PDV.Core.Repositories
         /// <returns>Uma lista com as entidades filtradas.</returns>
         public Task<List<Sale>> GetByPeriodAsync(DateTime startDate, DateTime endDate);
 
-        /// <summary>
-        /// Retorna todas as vendas de um cliente específico.
-        /// </summary>
-        /// <param name="customerId">Identificador do cliente.</param>
-        /// <returns>Uma lista com as vendas de um cliente especifico.</returns>
-        public Task<List<Sale>> GetSaleByCostumerAsync(Guid customerId);
     }
 }

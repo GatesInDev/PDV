@@ -56,11 +56,9 @@ namespace PDV.Infrastructure.Repositories
         /// <returns>Total de vendas realizadas no dia.</returns>
         public async Task<int> GetDailySales(DateTime date)
         {
-            var list = _context.Sales
+            return _context.Sales
                 .Where(s => s.SaleDate.Date == date.Date)
                 .Count();
-
-            return list;
         }
 
         /// <summary>

@@ -44,8 +44,8 @@ namespace PDV.Core.Repositories
         /// <summary>
         /// Retorna todos os produtos de uma categoria específica do banco de dados.
         /// </summary>
-        /// <param name="category">Categoria com os produtos a serem retornados.</param>
+        /// <param name="id"></param>
         /// <returns>Uma lista com os produtos pertencentes aquela categoria.</returns>
-        Task<List<Product>> GetByCategory(string category);
+        Task<List<Product>> GetByCategory(int id);
     }
 }

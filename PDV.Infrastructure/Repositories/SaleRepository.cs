@@ -64,18 +64,5 @@ namespace PDV.Infrastructure.Repositories
                                     .OrderByDescending(s => s.SaleDate)
                                     .ToListAsync();
         }
-
-        /// <summary>
-        /// Retorna todas as vendas de um cliente específico.
-        /// </summary>
-        /// <param name="customerId">Identificador do cliente.</param>
-        /// <returns>uma lista com as compras do cliente.</returns>
-        public async Task<List<Sale>> GetSaleByCostumerAsync(Guid customerId)
-        {
-            return await _context.Sales
-                                    .Include(p => p.SaleProducts)
-                                    .Where(s => s.CustomerId == customerId)
-                                    .ToListAsync();
-        }
     }
 }

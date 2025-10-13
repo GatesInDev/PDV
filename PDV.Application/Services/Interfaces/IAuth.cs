@@ -13,8 +13,9 @@ namespace PDV.Application.Services.Interfaces
         /// Serviço para validar a autenticação.
         /// </summary>
         /// <param name="user">Objeto com usuario e senha.</param>
+        /// <param name="key"></param>
         /// <returns>Objeto com o id e o cargo deste usuario.</returns>
-        Task<User> AuthenticateUser(LoginModel user);
+        Task<string> AuthenticateUser(LoginModel user, string key);
 
         /// <summary>
         /// Serviço para gerar o Token JWT.
@@ -23,7 +24,7 @@ namespace PDV.Application.Services.Interfaces
         /// <param name="role">Cargo deste usuario que o token representará.</param>
         /// <param name="genKey">Chave de codificação do sistema para a chave.</param>
         /// <returns>String com o token.</returns>
-        Task<string> GenerateToken(string username, string role, string genKey);
+        string GenerateToken(string username, string role, string genKey);
 
         /// <summary>
         /// Retorna todos os usuarios do sistema. Somente Administrador.

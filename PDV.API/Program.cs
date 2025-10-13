@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer; // Para autenticação JWT
 using Microsoft.EntityFrameworkCore; // Para ter acesso ao DbContext e DbSet
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens; // Para validação de tokens
 using PDV.Application.Mappings; // Para ter acesso ao AutoMapper profiles
 using PDV.Application.Services.Implementations; // Para ter acesso as implementações de serviço

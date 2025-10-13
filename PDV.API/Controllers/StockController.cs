@@ -9,7 +9,7 @@ namespace PDV.API.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class StockController : ControllerBase
+    public partial class StockController : ControllerBase
     {
         private readonly IStockService _stockService;
 
@@ -20,19 +20,6 @@ namespace PDV.API.Controllers
         public StockController(IStockService stockService)
         {
             _stockService = stockService;
-        }
-
-        /// <summary>
-        /// Retorna o estoque de um produto pelo ID do produto.
-        /// </summary>
-        /// <param name="id">Identificador do produto.</param>
-        /// <returns>Estoque do produto em especifico retornado com sucesso.</returns>
-        [Authorize(Roles = "Administrador,Operador,Estoquista")]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetStockByProductId(Guid id)
-        {
-            var stock = await _stockService.GetStockByProductId(id);
-            return Ok(stock);
         }
     }
 }

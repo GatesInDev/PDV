@@ -81,11 +81,14 @@ namespace PDV.Infrastructure.Repositories
         /// <summary>
         /// Retorna todos os produtos de uma categoria específica do banco de dados.
         /// </summary>
-        /// <param name="category">O nome da categoria a ser buscada.</param>
+        /// <param name="id"></param>
         /// <returns>uma lista com todos os produtos daquela categoria.</returns>
-        public async Task<List<Product>> GetByCategory(string category)
+        public async Task<List<Product>> GetByCategory(int id)
         {
-            return await _context.Products.Include(p => p.Category).Where(p => p.Category.Name == category).ToListAsync();
+            return await _context.Products
+                .Include(p => p.Category)
+                .Where(p => p.Category.Id == id)
+                .ToListAsync();
         }
     }
 }

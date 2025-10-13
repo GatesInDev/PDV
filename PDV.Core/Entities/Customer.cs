@@ -35,12 +35,6 @@
         /// </summary>
         public DateTime CreatedAt { get; set; }
 
-
-        /// <summary>
-        /// Identificador da venda associada ao cliente.
-        /// </summary>
-        public Guid SaleId { get; set; }
-
         /// <summary>
         /// Navegação para a venda associada ao cliente.
         /// </summary>
