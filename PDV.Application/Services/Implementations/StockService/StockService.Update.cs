@@ -17,18 +17,22 @@ namespace PDV.Application.Services.Implementations
         {
             try
             {
-                if (dto == null)
+                if (dto != null)
+                {
+                    var stock = _mapper.Map<Stock>(dto);
+                    stock.LastUpdated = DateTime.UtcNow;
+                    stock.MetricUnit = dto.MetricUnit;
+
+                    await _repository.UpdateAsync(stock);
+                }
+                else
+                {
                     throw new ArgumentNullException(nameof(dto));
-
-                var stock = _mapper.Map<Stock>(dto);
-                stock.LastUpdated = DateTime.UtcNow;
-                stock.MetricUnit = dto.MetricUnit;
-
-                await _repository.UpdateAsync(stock);
+                }
             }
-            catch (ArgumentException ex)
+            catch (ArgumentNullException ex)
             {
-                throw new ArgumentException("Dados inválidos fornecidos para atualizar o estoque.", ex);
+                throw new ArgumentNullException("Dados inválidos fornecidos para atualizar o estoque.", ex);
             }
             catch (Exception ex)
             {
