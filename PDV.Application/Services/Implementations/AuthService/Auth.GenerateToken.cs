@@ -40,9 +40,7 @@ namespace PDV.Application.Services.Implementations
                 expires: DateTime.UtcNow.AddMinutes(30),
                 signingCredentials: creds);
 
-            var code = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return $"Bearer {code}";
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

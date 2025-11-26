@@ -28,5 +28,7 @@ namespace PDV.Application.Services.Interfaces
         /// <param name="id">Identificador da sessão de caixa a ser retornada.</param>
         /// <returns>Objeto com os dados da sessão de caixa/Null</returns>
         Task<CashSession?> GetCashById(Guid id);
+
+        Task<CashSession?> GetOpenSessionAsync();
     }
 }

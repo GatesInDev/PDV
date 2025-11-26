@@ -24,6 +24,7 @@ namespace PDV.Application.Services.Implementations
 
                 map.DailyIncome = incomeDayTotal;
 
+                if (salesDayTotal == 0) salesDayTotal = 1;
                 map.MediumTicket = incomeDayTotal / salesDayTotal;
 
                 return map;

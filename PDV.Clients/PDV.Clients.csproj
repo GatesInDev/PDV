@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\Cartoon_Girl_wFlower.jpg" />
+    <None Remove="Resources\Lavander_Image_Background.jpg" />
+    <None Remove="Resources\Placeholder_Logo_AI_Generated.png" />
+    <None Remove="Views\cartoon-girl-walking-with-flower.jpg" />
+    <None Remove="Views\Gemini_Generated_Image_fx8l1fx8l1fx8l1f.png" />
+    <None Remove="Views\Single_lavender_flower02.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+    <PackageReference Include="System.Net.Http.Json" Version="10.0.0" />
+    <PackageReference Include="WPF-UI" Version="4.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Cartoon_Girl_wFlower.jpg" />
+    <Resource Include="Resources\Lavander_Image_Background.jpg" />
+    <Resource Include="Resources\Placeholder_Logo_AI_Generated.png" />
+  </ItemGroup>
+
+</Project>

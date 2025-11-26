@@ -33,5 +33,7 @@ namespace PDV.Application.Services.Interfaces
         /// <param name="id">Identificador do cliente.</param>
         /// <returns>Lista com as compras do cliente.</returns>
         Task<List<CustomersAndSalesDTO>> GetSalesHistoryByCostumerId(Guid id);
+
+        Task<List<CustomerDTO>> GetByNameAsync(string name);
     }
 }

@@ -90,5 +90,13 @@ namespace PDV.Infrastructure.Repositories
                 .Where(p => p.Category.Id == id)
                 .ToListAsync();
         }
+
+        public async Task<List<Product>> GetByNameAsync(string name)
+        {
+            return await _context.Products
+                .AsNoTracking()
+                .Where(c => c.Name.Contains(name))
+                .ToListAsync();
+        }
     }
 }

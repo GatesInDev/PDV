@@ -1,4 +1,5 @@
 ﻿using PDV.Application.DTOs;
+using PDV.Application.DTOs.Auth;
 using PDV.Core.Entities;
 using System.Data;
 
@@ -15,7 +16,7 @@ namespace PDV.Application.Services.Interfaces
         /// <param name="user">Objeto com usuario e senha.</param>
         /// <param name="key"></param>
         /// <returns>Objeto com o id e o cargo deste usuario.</returns>
-        Task<string> AuthenticateUser(LoginModel user, string key);
+        Task<LoginRespondeDTO> AuthenticateUser(LoginModel user, string key);
 
         /// <summary>
         /// Serviço para gerar o Token JWT.

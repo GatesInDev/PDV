@@ -20,7 +20,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = false; // em produção, usar true
+    options.RequireHttpsMetadata = true; // em produção, usar true
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -59,7 +59,10 @@ builder.Services.AddScoped<IMetricsRepository, MetricsRepository>();
 builder.Services.AddScoped<IAuth, Auth>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddHttpContextAccessor();
-
+if (OperatingSystem.IsWindows())
+{
+    builder.Services.AddSingleton<ILife, Life>();
+}
 builder.Services.AddAutoMapper(typeof(StockProfile));
 
 builder.Services.AddEndpointsApiExplorer();

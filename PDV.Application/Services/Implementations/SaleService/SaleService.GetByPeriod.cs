@@ -24,7 +24,7 @@ namespace PDV.Application.Services.Implementations
 
                 if (!list.Any())
                 {
-                    throw new NoSalesInPeriodException(startDate, endDate);
+                    return new List<SaleDetailsDTO>();
                 }
 
                 return _mapper.Map<List<SaleDetailsDTO>>(list);

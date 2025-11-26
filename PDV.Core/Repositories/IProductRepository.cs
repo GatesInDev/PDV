@@ -47,5 +47,7 @@ namespace PDV.Core.Repositories
         /// <param name="id"></param>
         /// <returns>Uma lista com os produtos pertencentes aquela categoria.</returns>
         Task<List<Product>> GetByCategory(int id);
+
+        Task<List<Product>> GetByNameAsync(string name);
     }
 }

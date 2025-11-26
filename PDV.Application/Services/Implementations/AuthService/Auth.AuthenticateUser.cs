@@ -1,4 +1,5 @@
 ﻿using PDV.Application.DTOs;
+using PDV.Application.DTOs.Auth;
 using PDV.Core.Entities;
 
 namespace PDV.Application.Services.Implementations
@@ -12,10 +13,8 @@ namespace PDV.Application.Services.Implementations
         /// <param name="key"></param>
         /// <returns>Objeto com o id e o cargo deste usuario.</returns>
         /// <exception cref="Exception">Usuario sem cargo válido.</exception>
-        public async Task<string> AuthenticateUser(LoginModel user, string key)
+        public async Task<LoginRespondeDTO> AuthenticateUser(LoginModel user, string key)
         {
-
-
             if (await _authRepository.ThisUserExist(user.Username, user.Password))
             {
                 var role = await _authRepository.getRoleByUser(user.Username) ?? throw new Exception("Cargo inválido.");
@@ -31,7 +30,14 @@ namespace PDV.Application.Services.Implementations
                 {
                     var tokenString = GenerateToken(data.Username, data.Role, key);
 
-                    return tokenString;
+                    var json = new LoginRespondeDTO()
+                    {
+                        Token = tokenString,
+                        Username = user.Username,
+                        Role = role
+                    };
+
+                    return json;
                 }
             }
 

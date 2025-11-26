@@ -63,5 +63,13 @@ namespace PDV.Infrastructure.Repositories
                 .Where(s => s.CustomerId == customerId)
                 .ToListAsync();
         }
+
+        public async Task<List<Customer>> GetCustomerByNameAsync(string name)
+        {
+            return await _context.Customers
+                .AsNoTracking() 
+                .Where(c => c.Name.Contains(name))
+                .ToListAsync();
+        }
     }
 }

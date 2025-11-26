@@ -48,5 +48,7 @@ namespace PDV.Application.Services.Interfaces
         /// <param name="id">Identificador do produto a ser dasabilitado.</param>
         /// <returns>True/False</returns>
         Task<bool> Delete(Guid id);
+
+        Task<List<ProductDTO>> GetProductsByNameAsync(string name);
     }
 }

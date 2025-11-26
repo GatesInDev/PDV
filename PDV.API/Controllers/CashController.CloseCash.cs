@@ -18,7 +18,7 @@ namespace PDV.API.Controllers
             try
             {
                 await _cashService.CloseCash(dto);
-                return Ok(GetCashById(dto.Id));
+                return Ok();
             }
             catch (Exception ex)
             {
