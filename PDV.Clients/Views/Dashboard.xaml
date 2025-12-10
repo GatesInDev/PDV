@@ -196,9 +196,9 @@
 
                         <ui:CardAction
                             Margin="0,8,0,0"
-                            Command="{Binding RunReportCommand}"
-                            Content="Gerar Relatório"
-                            Icon="{ui:SymbolIcon DocumentArrowDown24}"
+                            Command="{Binding NewProductCommand}"
+                            Content="Produtos"
+                            Icon="{ui:SymbolIcon Box24}"
                             ToolTip="Exportar o relatório de vendas do dia." />
 
                     </StackPanel>

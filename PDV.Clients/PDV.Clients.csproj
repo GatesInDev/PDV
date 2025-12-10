@@ -25,6 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PDV.Core\PDV.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Resources\Cartoon_Girl_wFlower.jpg" />
     <Resource Include="Resources\Lavander_Image_Background.jpg" />
     <Resource Include="Resources\Placeholder_Logo_AI_Generated.png" />

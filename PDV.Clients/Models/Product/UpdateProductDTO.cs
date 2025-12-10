@@ -34,6 +34,8 @@ namespace PDV.Application.DTOs.Product
         [MaxLength(50, ErrorMessage = "A unidade de medida não pode exceder 50 caracteres.")]
         public string MetricUnit { get; set; }
 
+        public int Quantity { get; set; }
+
         /// <summary>
         /// Definir a FK para a categoria do produto.
         /// </summary>

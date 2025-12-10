@@ -9,7 +9,7 @@ namespace PDV.Clients.Services.Interfaces
         Task<CategoryDetailsDTO> GetByIdAsync(int id);
 
         Task UpdateAsync(UpdateCategoryDTO category);
-
-        Task<List<CategoryDTO>> GetAllAsync();*/
+        */
+        Task<List<CategoryDTO>> GetAllCategoriesAsync();
     }
 }

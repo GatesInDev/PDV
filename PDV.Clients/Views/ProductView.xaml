@@ -1,0 +1,267 @@
+﻿<ui:FluentWindow
+    x:Class="PDV.Clients.Views.ProductView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="Gestão de Produtos"
+    Width="1200"
+    Height="750"
+    ExtendsContentIntoTitleBar="True"
+    WindowBackdropType="Mica"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,0,0,24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                <ui:Button
+                    Margin="0,0,12,0"
+                    Appearance="Secondary"
+                    Command="{Binding BackCommand}"
+                    Icon="{ui:SymbolIcon ArrowLeft24}"
+                    ToolTip="Voltar para Dashboard" />
+                <ui:SymbolIcon
+                    Margin="0,0,12,0"
+                    FontSize="28"
+                    Symbol="Box24" />
+                <TextBlock
+                    FontSize="24"
+                    FontWeight="SemiBold"
+                    Text="Produtos" />
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <ui:Button
+                    Margin="0,0,8,0"
+                    Appearance="Secondary"
+                    Command="{Binding RefreshCommand}"
+                    Icon="{ui:SymbolIcon ArrowSync24}">
+                    <TextBlock Text="Atualizar" />
+                </ui:Button>
+
+                <ui:Button
+                    Appearance="Primary"
+                    Command="{Binding NewProductCommand}"
+                    Icon="{ui:SymbolIcon Add24}">
+                    <TextBlock Text="Novo Produto" />
+                </ui:Button>
+            </StackPanel>
+        </Grid>
+
+        <TextBlock
+            Grid.Row="0"
+            Margin="0,0,0,8"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Foreground="#FF5555"
+            Text="{Binding ErrorMessage}"
+            TextWrapping="Wrap">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="Text" Value="">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <ui:Card
+                Grid.Column="0"
+                Padding="0"
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Stretch">
+                <ui:DataGrid
+                    AutoGenerateColumns="False"
+                    HeadersVisibility="Column"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding Products}"
+                    SelectedItem="{Binding SelectedListItem, Mode=TwoWay}"
+                    SelectionMode="Single"
+                    VerticalScrollBarVisibility="Auto">
+                    <ui:DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Sku}"
+                            Header="SKU" />
+                        <DataGridTextColumn
+                            Width="*"
+                            Binding="{Binding Name}"
+                            Header="Nome" />
+                        <DataGridTextColumn
+                            Width="*"
+                            Binding="{Binding CategoryName}"
+                            Header="Categoria" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding Price, StringFormat=C}"
+                            Header="Preço" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding StockQuantity}"
+                            Header="Estoque" />
+                        <DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding MetricUnit}"
+                            Header="Unid." />
+                    </ui:DataGrid.Columns>
+                </ui:DataGrid>
+            </ui:Card>
+
+            <ScrollViewer Grid.Column="2">
+                <ui:Card
+                    Padding="24"
+                    VerticalAlignment="Stretch"
+                    VerticalContentAlignment="Stretch">
+
+                    <Grid>
+
+                        <Grid DataContext="{Binding SelectedProduct}">
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Margin="0,0,0,16"
+                                FontSize="18"
+                                FontWeight="SemiBold"
+                                Text="Detalhes do Produto" />
+
+                            <StackPanel Grid.Row="1">
+
+                                <TextBlock
+                                    Margin="0,0,0,6"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Text="SKU *" />
+                                <ui:TextBox Margin="0,0,0,12" Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}" />
+
+                                <TextBlock
+                                    Margin="0,0,0,6"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Text="Nome *" />
+                                <ui:TextBox Margin="0,0,0,12" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}" />
+
+                                <TextBlock
+                                    Margin="0,0,0,6"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Text="Categoria *" />
+                                <ComboBox
+                                    Margin="0,0,0,12"
+                                    DisplayMemberPath="Name"
+                                    ItemsSource="{Binding DataContext.Categories, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}"
+                                    SelectedValue="{Binding CategoryId, Mode=TwoWay}"
+                                    SelectedValuePath="Id" />
+
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock
+                                            Margin="0,0,0,6"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="Preço *" />
+                                        <ui:TextBox Text="{Binding Price, UpdateSourceTrigger=PropertyChanged, StringFormat=F2, FallbackValue='0.00'}" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock
+                                            Margin="0,0,0,6"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="Unidade *" />
+                                        <ui:TextBox Text="{Binding MetricUnit, UpdateSourceTrigger=PropertyChanged, FallbackValue=''}" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <TextBlock
+                                    Margin="0,0,0,6"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Text="Estoque" />
+                                <ui:TextBox Margin="0,0,0,12" Text="{Binding StockQuantity, UpdateSourceTrigger=PropertyChanged, FallbackValue='0'}" />
+                            </StackPanel>
+
+                            <StackPanel
+                                Grid.Row="2"
+                                Margin="0,16,0,0"
+                                HorizontalAlignment="Right"
+                                Orientation="Horizontal">
+                                <ui:Button
+                                    Margin="0,0,8,0"
+                                    Appearance="Secondary"
+                                    Command="{Binding DataContext.DeleteProductCommand, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}"
+                                    Content="Excluir"
+                                    Icon="{ui:SymbolIcon Delete24}" />
+
+                                <ui:Button
+                                    Appearance="Primary"
+                                    Command="{Binding DataContext.SaveProductCommand, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}"
+                                    Content="Salvar"
+                                    Icon="{ui:SymbolIcon Save24}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontSize="16"
+                            Foreground="Gray"
+                            Text="Selecione um produto ou crie um novo.">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedProduct}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                    </Grid>
+                </ui:Card>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</ui:FluentWindow>

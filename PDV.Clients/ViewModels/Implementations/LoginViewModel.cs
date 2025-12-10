@@ -4,11 +4,12 @@ using System.Reflection.Metadata;
 using System.Security.Authentication;
 using System.Windows;
 using System.Windows.Input;
+using PDV.Clients.ViewModels.Interfaces;
 using Wpf.Ui.Input;
 
-namespace PDV.Clients.ViewModels;
+namespace PDV.Clients.ViewModels.Implementations;
 
-public class LoginViewModel : Notifier
+public class LoginViewModel : Notifier, ILoginViewModel
 {
     private string? _username;
     private string? _errorMessage;

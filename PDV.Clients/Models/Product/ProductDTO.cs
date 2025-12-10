@@ -15,6 +15,10 @@
         /// </summary>
         public string Name { get; set; }
 
+        public string SKU { get; set; }
+
+        public bool IsActive { get; set; }
+
         public decimal Price { get; set; }
 
         /// <summary>

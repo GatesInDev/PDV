@@ -1,4 +1,6 @@
 ﻿using PDV.Application.DTOs.Sales;
+using PDV.Core.Entities;
+using PDV.Domain;
 
 namespace PDV.Application.Services.Interfaces
 {
@@ -27,6 +29,6 @@ namespace PDV.Application.Services.Interfaces
         /// <param name="startDate">Data de inicio do filtro.</param>
         /// <param name="endDate">Data de fim do filtro.</param>
         /// <returns>uma lista com objetos de vendas dentro do periodo informado.</returns>
-        public Task<List<SaleDetailsDTO>> GetByPeriod(DateTime startDate, DateTime endDate);
+        public Task<List<SaleResultDto>> GetByPeriod(DateTime startDate, DateTime endDate);
     }
 }

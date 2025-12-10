@@ -1,4 +1,5 @@
-﻿using PDV.Clients.ViewModels;
+﻿using PDV.Clients.ViewModels.Implementations;
+using PDV.Clients.ViewModels.Interfaces;
 using Wpf.Ui.Controls;
 
 namespace PDV.Clients.Views
@@ -7,7 +8,7 @@ namespace PDV.Clients.Views
     {
         public string? Role { get; private set; } 
 
-        public LoginView(LoginViewModel viewModel)
+        public LoginView(ILoginViewModel viewModel)
         {
             InitializeComponent();
             this.DataContext = viewModel;

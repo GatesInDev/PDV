@@ -2,40 +2,17 @@
 using PDV.Application.DTOs.Product;
 using PDV.Application.DTOs.Sales;
 using PDV.Clients.Services.Interfaces;
+using PDV.Clients.Models;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
+using PDV.Clients.ViewModels.Interfaces;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Input;
 
-namespace PDV.Clients.ViewModels;
+namespace PDV.Clients.ViewModels.Implementations;
 
-public class CustomerSuggestionDTO
-{
-    public Guid Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public override string ToString() => Name;
-}
-public class ProductsSuggestionDTO
-{
-    public Guid Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-
-    public string Description { get; set; } = string.Empty;
-    private decimal Price { get; set; }
-    public override string ToString() => Name;
-}
-
-public class CartItemModel
-{
-    public string ProductId { get; set; } = string.Empty;
-    public string ProductName { get; set; } = string.Empty;
-    public decimal UnitPrice { get; set; }
-    public int Quantity { get; set; }
-    public decimal TotalPrice => UnitPrice * Quantity;
-}
-
-public class CashViewModel : Notifier
+public class CashViewModel : Notifier, ICashViewModel
 {
     private readonly IApiClient _apiClient;
 

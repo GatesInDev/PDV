@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
-using PDV.Clients.ViewModels;
+using PDV.Clients.ViewModels.Implementations;
+using PDV.Clients.ViewModels.Interfaces;
 using Wpf.Ui.Controls;
 
 namespace PDV.Clients.Views
@@ -9,7 +10,7 @@ namespace PDV.Clients.Views
     /// </summary>
     public partial class Dashboard : FluentWindow
     {
-        public Dashboard(DashboardViewModel view)
+        public Dashboard(IDashboardViewModel view)
         {
             InitializeComponent();
             this.DataContext = view;

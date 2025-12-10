@@ -3,9 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using PDV.Clients.Views;
 using PDV.Clients.Services.Implementations;
 using PDV.Clients.Services.Interfaces;
-using PDV.Clients.ViewModels;
 using Wpf.Ui.Controls;
 using WpfApplication = System.Windows.Application;
+using PDV.Clients.ViewModels.Implementations;
+using PDV.Clients.ViewModels.Interfaces;
 
 namespace PDV.Clients
 {
@@ -24,9 +25,10 @@ namespace PDV.Clients
         {
             services.AddSingleton<IApiClient, ApiClient>();
 
-            services.AddTransient<LoginViewModel>();
-            services.AddTransient<DashboardViewModel>();
-            services.AddTransient<CashViewModel>();
+            services.AddTransient<ILoginViewModel, LoginViewModel>();
+            services.AddTransient<IDashboardViewModel, DashboardViewModel>();
+            services.AddTransient<ICashViewModel, CashViewModel>();
+            services.AddTransient<IProductViewModel, ProductViewModel>();
 
             services.AddTransient<LoginView>();
             services.AddTransient<Dashboard>();

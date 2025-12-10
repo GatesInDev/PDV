@@ -1,18 +1,16 @@
-using Microsoft.Extensions.DependencyInjection;
 using PDV.Clients.Models.Dashboard;
 using PDV.Clients.Services.Interfaces;
-using System;
+using PDV.Clients.Views;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using PDV.Clients.Views;
+using PDV.Clients.ViewModels.Interfaces;
+using Wpf.Ui.Controls;
 using Wpf.Ui.Input;
 
-namespace PDV.Clients.ViewModels
+namespace PDV.Clients.ViewModels.Implementations
 {
-    public class DashboardViewModel : Notifier
+    public class DashboardViewModel : Notifier, IDashboardViewModel
     {
         private readonly IApiClient _dashboardService;
 
@@ -58,12 +56,12 @@ namespace PDV.Clients.ViewModels
         }
         private double _cpuLoad;
 
-        public ObservableCollection<TransactionModel> RecentTransactions { get; } = new ObservableCollection<TransactionModel>();
+        public ObservableCollection<TransactionModel> RecentTransactions { get; } = [];
 
         public ICommand RefreshCommand { get; }
         public ICommand NewSaleCommand { get; }
         public ICommand NewUserCommand { get; }
-        public ICommand RunReportCommand { get; }
+        public ICommand NewProductCommand { get; }
 
         private bool _isBusy;
 
@@ -73,7 +71,7 @@ namespace PDV.Clients.ViewModels
             RefreshCommand = new RelayCommand<object>(Refresh);
             NewSaleCommand = new RelayCommand<object>(NewSale);
             NewUserCommand = new RelayCommand<object>(NewUser);
-            RunReportCommand = new RelayCommand<object>(RunReport);
+            NewProductCommand = new RelayCommand<object>(NewProduct);
 
             _ = LoadInitialAsync();
         }
@@ -130,7 +128,7 @@ namespace PDV.Clients.ViewModels
             }
         }
 
-        private void NewSale(object? _)
+        private async void NewSale(object? _)
         {
             try
             {
@@ -147,18 +145,49 @@ namespace PDV.Clients.ViewModels
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"Erro ao abrir venda: {ex.Message}");
+                var msgBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Info",
+                    Content = "Valor inválido.",
+                    CloseButtonText = "OK",
+                    MaxWidth = 400
+                };
+                await msgBox.ShowDialogAsync();
             }
         }
+
 
         private void NewUser(object? _)
         {
             // TODO: implementar fluxo de criação de usuário.
         }
 
-        private void RunReport(object? _)
+        private async void NewProduct(object? _)
         {
-            // TODO: implementar geração/exportação de relatório.
+            try
+            {
+                var productVm = new ProductViewModel(_dashboardService);
+
+                var productWindow = new ProductView(productVm);
+
+                productVm.RequestClose += () =>
+                {
+                    productWindow.Close();
+                };
+
+                productWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                var msgBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Info",
+                    Content = "Valor inválido.",
+                    CloseButtonText = "OK",
+                    MaxWidth = 400
+                };
+                await msgBox.ShowDialogAsync();
+            }
         }
     }
 }

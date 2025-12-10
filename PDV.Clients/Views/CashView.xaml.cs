@@ -1,4 +1,5 @@
-﻿using PDV.Clients.ViewModels;
+﻿using PDV.Clients.ViewModels.Implementations;
+using PDV.Clients.ViewModels.Interfaces;
 using Wpf.Ui.Controls;
 
 namespace PDV.Clients.Views
@@ -8,7 +9,7 @@ namespace PDV.Clients.Views
     /// </summary>
     public partial class CashView : FluentWindow
     {
-        public CashView(CashViewModel view)
+        public CashView(ICashViewModel view)
         {
             InitializeComponent();
             this.DataContext = view;
