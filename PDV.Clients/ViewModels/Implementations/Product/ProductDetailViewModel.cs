@@ -1,8 +1,7 @@
 using PDV.Application.DTOs.Category;
-using PDV.Clients.ViewModels;
 using System.Collections.ObjectModel;
 
-namespace PDV.Clients.ViewModels.Implementations
+namespace PDV.Clients.ViewModels.Implementations.Product
 {
     /// <summary>
     /// ViewModel para edição detalhada de um produto (Detail no Master-Detail).

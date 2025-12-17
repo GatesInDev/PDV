@@ -6,28 +6,32 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="Dashboard"
-    Width="1100"
-    Height="700"
+    Width="1400"
+    Height="900"
+    MinWidth="1000"
+    MinHeight="700"
     ExtendsContentIntoTitleBar="True"
     WindowBackdropType="Mica"
     WindowStartupLocation="CenterScreen"
+    WindowState="Maximized"
     mc:Ignorable="d">
 
-    <Grid Margin="24">
+    <Grid Margin="32">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="0,0,0,24">
+        <Grid Grid.Row="0" Margin="0,0,0,32">
             <TextBlock
                 VerticalAlignment="Center"
-                FontSize="24"
+                FontSize="32"
                 FontWeight="SemiBold"
                 Text="Dashboard Principal" />
 
             <ui:Button
+                Padding="16,8"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Appearance="Primary"
@@ -41,86 +45,94 @@
 
         <UniformGrid
             Grid.Row="1"
-            Margin="0,0,0,12"
+            Margin="0,0,0,24"
             Columns="4">
-            <ui:CardControl Margin="0,0,12,0" Padding="12">
+            <ui:CardControl Margin="0,0,16,0" Padding="20">
                 <Grid>
                     <ui:SymbolIcon
                         HorizontalAlignment="Right"
                         VerticalAlignment="Bottom"
-                        FontSize="48"
+                        FontSize="64"
                         Opacity="0.1"
                         Symbol="People24" />
                     <StackPanel>
                         <TextBlock
                             FontSize="14"
                             FontWeight="SemiBold"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="Usuários" />
                         <TextBlock
-                            FontSize="28"
+                            Margin="0,8,0,0"
+                            FontSize="36"
                             FontWeight="Bold"
                             Text="{Binding TotalUsers}" />
                     </StackPanel>
                 </Grid>
             </ui:CardControl>
 
-            <ui:CardControl Margin="6,0,6,0" Padding="12">
+            <ui:CardControl Margin="8,0,8,0" Padding="20">
                 <Grid>
                     <ui:SymbolIcon
                         HorizontalAlignment="Right"
                         VerticalAlignment="Bottom"
-                        FontSize="48"
+                        FontSize="64"
                         Opacity="0.1"
                         Symbol="Globe24" />
                     <StackPanel>
                         <TextBlock
                             FontSize="14"
                             FontWeight="SemiBold"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="Sessões Ativas" />
                         <TextBlock
-                            FontSize="28"
+                            Margin="0,8,0,0"
+                            FontSize="36"
                             FontWeight="Bold"
                             Text="{Binding ActiveSessions}" />
                     </StackPanel>
                 </Grid>
             </ui:CardControl>
 
-            <ui:CardControl Margin="6,0,6,0" Padding="12">
+            <ui:CardControl Margin="8,0,8,0" Padding="20">
                 <Grid>
                     <ui:SymbolIcon
                         HorizontalAlignment="Right"
                         VerticalAlignment="Bottom"
-                        FontSize="48"
+                        FontSize="64"
                         Opacity="0.1"
                         Symbol="Receipt24" />
                     <StackPanel>
                         <TextBlock
                             FontSize="14"
                             FontWeight="SemiBold"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="Transações (hoje)" />
                         <TextBlock
-                            FontSize="28"
+                            Margin="0,8,0,0"
+                            FontSize="36"
                             FontWeight="Bold"
                             Text="{Binding TransactionsToday}" />
                     </StackPanel>
                 </Grid>
             </ui:CardControl>
 
-            <ui:CardControl Margin="12,0,0,0" Padding="12">
+            <ui:CardControl Margin="16,0,0,0" Padding="20">
                 <Grid>
                     <ui:SymbolIcon
                         HorizontalAlignment="Right"
                         VerticalAlignment="Bottom"
-                        FontSize="48"
+                        FontSize="64"
                         Opacity="0.1"
                         Symbol="Money24" />
                     <StackPanel>
                         <TextBlock
                             FontSize="14"
                             FontWeight="SemiBold"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="Receita (hoje)" />
                         <TextBlock
-                            FontSize="28"
+                            Margin="0,8,0,0"
+                            FontSize="36"
                             FontWeight="Bold"
                             Text="{Binding RevenueToday, StringFormat=C}" />
                     </StackPanel>
@@ -130,23 +142,23 @@
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
-                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="380" />
             </Grid.ColumnDefinitions>
 
             <ui:Card
                 Grid.Column="0"
-                Margin="0,0,12,0"
-                Padding="12">
+                Padding="24"
+                VerticalAlignment="Top">
                 <StackPanel>
                     <TextBlock
-                        Margin="0,0,0,12"
-                        FontSize="18"
+                        Margin="0,0,0,16"
+                        FontSize="20"
                         FontWeight="SemiBold"
                         Text="Transações Recentes" />
 
                     <ui:DataGrid
-                        Height="400"
                         AutoGenerateColumns="False"
                         ItemsSource="{Binding RecentTransactions}"
                         VerticalScrollBarVisibility="Auto">
@@ -172,11 +184,11 @@
                 </StackPanel>
             </ui:Card>
 
-            <StackPanel Grid.Column="1">
-                <ui:Card Margin="0,0,0,12" Padding="12">
+            <StackPanel Grid.Column="2">
+                <ui:Card Margin="0,0,0,16" Padding="20">
                     <StackPanel>
                         <TextBlock
-                            Margin="0,0,0,12"
+                            Margin="0,0,0,16"
                             FontSize="18"
                             FontWeight="SemiBold"
                             Text="Ações Rápidas" />
@@ -188,33 +200,48 @@
                             ToolTip="Iniciar um novo registro de venda." />
 
                         <ui:CardAction
-                            Margin="0,8,0,0"
+                            Margin="0,12,0,0"
                             Command="{Binding NewUserCommand}"
                             Content="Novo Usuário"
                             Icon="{ui:SymbolIcon PersonAdd24}"
                             ToolTip="Adicionar um novo membro à equipe." />
 
                         <ui:CardAction
-                            Margin="0,8,0,0"
+                            Margin="0,12,0,0"
                             Command="{Binding NewProductCommand}"
                             Content="Produtos"
                             Icon="{ui:SymbolIcon Box24}"
-                            ToolTip="Exportar o relatório de vendas do dia." />
+                            ToolTip="Gerenciar catálogo de produtos." />
+
+                        <ui:CardAction
+                            Margin="0,12,0,0"
+                            Command="{Binding NewCustomerCommand}"
+                            Content="Clientes"
+                            Icon="{ui:SymbolIcon People24}"
+                            ToolTip="Gerenciar base de clientes." />
+
+                        <ui:CardAction
+                            Margin="0,12,0,0"
+                            Command="{Binding NewCategoryCommand}"
+                            Content="Categorias"
+                            Icon="{ui:SymbolIcon Production24}"
+                            ToolTip="Organizar categorias de produtos." />
 
                     </StackPanel>
                 </ui:Card>
 
-                <ui:Card Padding="12">
+                <ui:Card Padding="20">
                     <StackPanel>
                         <TextBlock
-                            Margin="0,0,0,12"
+                            Margin="0,0,0,16"
                             FontSize="18"
                             FontWeight="SemiBold"
                             Text="Status do Sistema" />
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="16" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -224,9 +251,9 @@
                             <TextBlock
                                 Grid.Row="0"
                                 Grid.Column="0"
-                                Margin="0,0,10,0"
+                                Margin="0,0,12,0"
                                 FontWeight="SemiBold"
-                                Text="Servidor de API:" />
+                                Text="Servidor:" />
                             <TextBlock
                                 Grid.Row="0"
                                 Grid.Column="1"
@@ -234,14 +261,15 @@
                                 Text="{Binding ServerStatus}" />
 
                             <TextBlock
-                                Grid.Row="1"
+                                Grid.Row="2"
                                 Grid.Column="0"
-                                Margin="0,8,10,0"
+                                Margin="0,0,12,0"
                                 FontWeight="SemiBold"
-                                Text="Carga (CPU):" />
+                                Text="CPU:" />
                             <ProgressBar
-                                Grid.Row="1"
+                                Grid.Row="2"
                                 Grid.Column="1"
+                                Height="20"
                                 VerticalAlignment="Center"
                                 Value="{Binding CpuLoad}" />
                         </Grid>

@@ -22,5 +22,23 @@ namespace PDV.Clients.Services.Implementations
                 return new List<CategoryDTO>();
             }
         }
+
+        public async Task CreateCategoryAsync(CreateCategoryDTO category)
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/Category", category);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task UpdateCategoryAsync(int id, UpdateCategoryDTO category)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"api/Category/{id}", category);
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task DeleteCategoryAsync(int id)
+        {
+            var response = await _httpClient.DeleteAsync($"api/Category/{id}");
+            response.EnsureSuccessStatusCode();
+        }
     }
 }

@@ -34,5 +34,7 @@ namespace PDV.Application.Services.Interfaces
         /// </summary>
         /// <returns>Uma lista resumida de todas as categorias.</returns>
         Task<List<CategoryDTO>> GetAll();
+
+        Task Delete(int id);
     }
 }

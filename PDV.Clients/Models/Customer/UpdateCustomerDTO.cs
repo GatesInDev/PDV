@@ -2,7 +2,7 @@
 
 namespace PDV.Application.DTOs.Customer
 {
-    public class CreateCustomerDTO
+    public class UpdateCustomerDTO
     {
         /// <summary>
         /// Nome do cliente.
@@ -30,5 +30,6 @@ namespace PDV.Application.DTOs.Customer
         /// </summary>
         [MaxLength(200, ErrorMessage = "O endereço não pode exceder 200 caracteres.")]
         public string Address { get; set; }
+
     }
 }

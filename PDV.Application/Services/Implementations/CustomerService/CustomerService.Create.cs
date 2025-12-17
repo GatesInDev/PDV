@@ -19,6 +19,7 @@ namespace PDV.Application.Services.Implementations
 
                 customer.Id = Guid.NewGuid();
                 customer.CreatedAt = DateTime.UtcNow;
+                customer.IsActive = true;
 
                 if (char.IsLower(customer.Name[0]))
                     throw new Exception("O nome do cliente deve começar com letra maiúscula.");

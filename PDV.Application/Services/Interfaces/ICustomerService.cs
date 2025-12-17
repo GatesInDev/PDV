@@ -1,4 +1,5 @@
 ﻿using PDV.Application.DTOs.Customer;
+using PDV.Core.Entities;
 
 namespace PDV.Application.Services.Interfaces
 {
@@ -21,6 +22,8 @@ namespace PDV.Application.Services.Interfaces
         /// <returns>Objeto com os dados do cliente.</returns>
         Task<CustomerDTO> GetById(Guid id);
 
+        Task Delete(Guid id);
+
         /// <summary>
         /// Retorna todos os clientes.
         /// </summary>
@@ -35,5 +38,7 @@ namespace PDV.Application.Services.Interfaces
         Task<List<CustomersAndSalesDTO>> GetSalesHistoryByCostumerId(Guid id);
 
         Task<List<CustomerDTO>> GetByNameAsync(string name);
+
+        Task Update(Guid id, UpdateCustomerDTO dto);
     }
 }

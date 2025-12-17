@@ -7,6 +7,10 @@ using Wpf.Ui.Controls;
 using WpfApplication = System.Windows.Application;
 using PDV.Clients.ViewModels.Implementations;
 using PDV.Clients.ViewModels.Interfaces;
+using PDV.Core.Entities;
+using PDV.Clients.ViewModels.Implementations.Customer;
+using PDV.Clients.ViewModels.Implementations.Product;
+using PDV.Clients.ViewModels.Implementations.Category;
 
 namespace PDV.Clients
 {
@@ -24,15 +28,20 @@ namespace PDV.Clients
         private void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IApiClient, ApiClient>();
+            services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
             services.AddTransient<ILoginViewModel, LoginViewModel>();
             services.AddTransient<IDashboardViewModel, DashboardViewModel>();
             services.AddTransient<ICashViewModel, CashViewModel>();
             services.AddTransient<IProductViewModel, ProductViewModel>();
+            services.AddTransient<ICustomerViewModel, CustomerViewModel>();
 
             services.AddTransient<LoginView>();
             services.AddTransient<Dashboard>();
             services.AddTransient<CashView>();
+            services.AddTransient<ProductView>();
+            services.AddTransient<CategoryView>();
+            services.AddTransient<CustomerView>();
         }
 
         protected override void OnStartup(StartupEventArgs e)

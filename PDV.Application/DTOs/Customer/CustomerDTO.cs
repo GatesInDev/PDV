@@ -1,4 +1,4 @@
-﻿namespace PDV.Application.DTOs.Customer
+﻿    namespace PDV.Application.DTOs.Customer
 {
     public class CustomerDTO
     {
@@ -31,5 +31,10 @@
         /// Data de criação do cliente.
         /// </summary>
         public string CreatedAt { get; set; }
+
+        /// <summary>
+        /// Indica se o cliente está ativo.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
     }
 }

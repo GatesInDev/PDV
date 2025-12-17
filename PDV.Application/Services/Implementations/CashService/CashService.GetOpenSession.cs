@@ -1,12 +1,27 @@
-﻿using PDV.Core.Entities;
+﻿using Microsoft.AspNetCore.Http;
+using PDV.Core.Entities;
 
 namespace PDV.Application.Services.Implementations
 {
     public partial class CashService
     {
-        public Task<CashSession?> GetOpenSessionAsync()
+        /// <summary>
+        /// Obtém a sessão de caixa aberta do operador atual.
+        /// </summary>
+        /// <returns>Sessão aberta do operador, ou null se não houver.</returns>
+        public async Task<CashSession?> GetOpenSessionAsync()
         {
-            return _repository.GetOpenSessionAsync();
+            if (_httpContextAcessor?.HttpContext?.User?.Identity?.Name == null)
+            {
+                return null;
+            }
+
+            var operatorName = _httpContextAcessor.HttpContext.User.Identity.Name;
+
+            if (string.IsNullOrEmpty(operatorName))
+                throw new Exception("Operador inválido.");
+
+            return await _repository.GetOpenSessionByOperatorAsync(operatorName);
         }
     }
 }

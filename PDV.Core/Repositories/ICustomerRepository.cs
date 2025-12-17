@@ -30,6 +30,8 @@ namespace PDV.Core.Repositories
         /// <param name="customerId">Identificador do cliente.</param>
         /// <returns>Uma lista com as vendas de um cliente especifico.</returns>
         public Task<List<Sale>> GetSaleByCostumerAsync(Guid customerId);
+
+        public Task UpdateCustomerAsync(Customer customer);
          
         public Task<List<Customer>> GetCustomerByNameAsync(string name);
     }

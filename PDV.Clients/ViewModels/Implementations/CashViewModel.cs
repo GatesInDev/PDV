@@ -15,6 +15,7 @@ namespace PDV.Clients.ViewModels.Implementations;
 public class CashViewModel : Notifier, ICashViewModel
 {
     private readonly IApiClient _apiClient;
+    private readonly IAuthenticationService _authService;
 
     private string? _searchProductText;
     private string _quantityText = "1";
@@ -30,6 +31,8 @@ public class CashViewModel : Notifier, ICashViewModel
     private string _openingAmountText = "0,00";
     private Guid? _currentSessionId;
     private string? _errorMessage;
+    private bool _hasDashboardAccess;
+    private string _backButtonText = "Voltar";
 
     public ObservableCollection<CartItemModel> CartItems { get; } = new();
     public ObservableCollection<CustomerSuggestionDTO> CustomerSuggestions { get; } = new();
@@ -134,13 +137,21 @@ public class CashViewModel : Notifier, ICashViewModel
     public bool IsOpenCashModalVisible
     {
         get => _isOpenCashModalVisible;
-        set { _isOpenCashModalVisible = value; OnPropertyChanged(); }
+        set
+        {
+            _isOpenCashModalVisible = value;
+            OnPropertyChanged();
+        }
     }
 
     public string OpeningAmountText
     {
         get => _openingAmountText;
-        set { _openingAmountText = value; OnPropertyChanged(); }
+        set
+        {
+            _openingAmountText = value;
+            OnPropertyChanged();
+        }
     }
 
     public string? ErrorMessage
@@ -152,6 +163,37 @@ public class CashViewModel : Notifier, ICashViewModel
             OnPropertyChanged();
         }
     }
+
+    public bool HasDashboardAccess
+    {
+        get => _hasDashboardAccess;
+        set
+        {
+            _hasDashboardAccess = value;
+            OnPropertyChanged();
+            UpdateBackButtonText();
+        }
+    }
+
+    public string BackButtonText
+    {
+        get => _backButtonText;
+        set
+        {
+            _backButtonText = value;
+            OnPropertyChanged();
+        }
+    }
+    public string OpenCashButtonText
+    {
+        get => _openCashButtonText;
+        set
+        {
+            _openCashButtonText = value;
+            OnPropertyChanged();
+        }
+    }
+    private string _openCashButtonText = "Abrir Caixa e Iniciar Vendas";
 
     public ICommand AddProductCommand { get; }
     public ICommand RemoveItemCommand { get; }
@@ -165,9 +207,11 @@ public class CashViewModel : Notifier, ICashViewModel
 
     public event Action? RequestClose;
 
-    public CashViewModel(IApiClient apiClient)
+    public CashViewModel(IApiClient apiClient, IAuthenticationService authService, bool hasDashboardAccess = true)
     {
         _apiClient = apiClient;
+        _authService = authService;
+        _hasDashboardAccess = hasDashboardAccess;
 
         AddProductCommand = new RelayCommand<object>(OnAddProduct, CanAddProduct);
         RemoveItemCommand = new RelayCommand<object>(OnRemoveItem);
@@ -179,7 +223,14 @@ public class CashViewModel : Notifier, ICashViewModel
         OpenCashCommand = new RelayCommand<object>(OnOpenCash);
         CloseCashCommand = new RelayCommand<object>(OnCloseCash);
 
+        UpdateBackButtonText();
         CheckCashStatus();
+    }
+
+    private void UpdateBackButtonText()
+    {
+        BackButtonText = _hasDashboardAccess ? "Voltar" : "Fechar";
+        OpenCashButtonText = _hasDashboardAccess ? "Abrir Caixa e Iniciar Vendas" : "Fechar Aplicação";
     }
 
     private bool CanAddProduct(object? _) => !IsBusy && !string.IsNullOrWhiteSpace(SearchProductText);
@@ -193,14 +244,7 @@ public class CashViewModel : Notifier, ICashViewModel
         {
             if (!int.TryParse(QuantityText, out int quantity) || quantity <= 0)
             {
-                var msgBox = new MessageBox
-                {
-                    Title = "Aviso",
-                    Content = "Quantidade inválida.",
-                    CloseButtonText = "OK",
-                    MaxWidth = 400
-                };
-                await msgBox.ShowDialogAsync();
+                ErrorMessage = "Quantidade inválida.";
                 return;
             }
 
@@ -239,6 +283,7 @@ public class CashViewModel : Notifier, ICashViewModel
                 SearchProductText = string.Empty;
                 QuantityText = "1";
                 RecalculateTotals();
+                ErrorMessage = null;
             }
             else
             {
@@ -261,6 +306,7 @@ public class CashViewModel : Notifier, ICashViewModel
         {
             CartItems.Remove(item);
             RecalculateTotals();
+            ErrorMessage = null;
         }
     }
 
@@ -268,10 +314,12 @@ public class CashViewModel : Notifier, ICashViewModel
     {
         SubTotal = CartItems.Sum(i => i.TotalPrice);
         decimal discount = 0;
-        if (decimal.TryParse(DiscountValue?.Replace("R$", "").Trim(), NumberStyles.Any, new CultureInfo("pt-BR"), out decimal d))
+        if (decimal.TryParse(DiscountValue?.Replace("R$", "").Trim(), NumberStyles.Any, new CultureInfo("pt-BR"),
+                out decimal d))
         {
             discount = d;
         }
+
         FinalTotal = SubTotal - discount;
         if (FinalTotal < 0) FinalTotal = 0;
         ((RelayCommand<object>)FinalizeSaleCommand).NotifyCanExecuteChanged();
@@ -282,18 +330,19 @@ public class CashViewModel : Notifier, ICashViewModel
     private async void OnFinalizeSale(object? _)
     {
         IsBusy = true;
+        ErrorMessage = null;
+
         try
         {
+            if (_selectedCustomerId == null || _selectedCustomerId == Guid.Empty)
+            {
+                ErrorMessage = "Selecione um cliente para prosseguir.";
+                return;
+            }
+
             if (string.IsNullOrEmpty(SelectedPaymentMethod))
             {
-                var msgBox = new MessageBox
-                {
-                    Title = "Aviso",
-                    Content = "Selecione um método de pagamento.",
-                    CloseButtonText = "OK",
-                    MaxWidth = 400
-                };
-                await msgBox.ShowDialogAsync();
+                ErrorMessage = "Selecione um método de pagamento.";
                 return;
             }
 
@@ -310,27 +359,12 @@ public class CashViewModel : Notifier, ICashViewModel
 
             if (await _apiClient.PostSaleAsync(createSaleDto, CancellationToken.None))
             {
-                var msgBoxSuccess = new MessageBox
-                {
-                    Title = "Sucesso",
-                    Content = "Venda criada com sucesso!",
-                    CloseButtonText = "OK",
-                    MaxWidth = 400
-                };
-
-                await msgBoxSuccess.ShowDialogAsync();
+                ErrorMessage = null;
                 OnCancelSale(null);
             }
             else
             {
-                var msgBoxError = new MessageBox
-                {
-                    Title = "Erro",
-                    Content = "Não foi possível criar a venda.",
-                    CloseButtonText = "OK",
-                    MaxWidth = 400
-                };
-                await msgBoxError.ShowDialogAsync();
+                ErrorMessage = "Não foi possível criar a venda.";
             }
         }
         catch (Exception ex)
@@ -410,6 +444,7 @@ public class CashViewModel : Notifier, ICashViewModel
             _selectedCustomerId = selected.Id;
             CustomerSearchText = selected.Name;
             CustomerSuggestions.Clear();
+            ErrorMessage = null;
         }
     }
 
@@ -420,6 +455,7 @@ public class CashViewModel : Notifier, ICashViewModel
         {
             SearchProductText = selected.Name;
             ProductSuggestions.Clear();
+            ErrorMessage = null;
         }
     }
 
@@ -445,11 +481,17 @@ public class CashViewModel : Notifier, ICashViewModel
     private async void CheckCashStatus()
     {
         IsBusy = true;
+        ErrorMessage = null;
+
         try
         {
             var sessions = await _apiClient.GetCashSessionsAsync();
 
-            var activeSession = sessions.FirstOrDefault(x => x.ClosedAt == null);
+            var currentUsername = _authService.GetCurrentUsername();
+            
+            var activeSession = sessions.FirstOrDefault(x =>
+                x.ClosedAt == null &&
+                x.OperatorName == currentUsername);
 
             if (activeSession == null)
             {
@@ -460,18 +502,12 @@ public class CashViewModel : Notifier, ICashViewModel
             {
                 IsOpenCashModalVisible = false;
                 _currentSessionId = activeSession.Id;
+                ErrorMessage = null;
             }
         }
         catch (Exception ex)
         {
-            var msgBox = new MessageBox
-            {
-                Title = "Erro",
-                Content = $"Erro ao verificar caixa: {ex.Message}.",
-                CloseButtonText = "OK",
-                MaxWidth = 400
-            };
-            await msgBox.ShowDialogAsync();
+            ErrorMessage = $"Erro ao verificar caixa: {ex.Message}";
         }
         finally
         {
@@ -481,16 +517,12 @@ public class CashViewModel : Notifier, ICashViewModel
 
     private async void OnOpenCash(object? _)
     {
-        if (!decimal.TryParse(OpeningAmountText.Replace("R$", "").Trim(), NumberStyles.Any, new CultureInfo("pt-BR"), out decimal amount))
+        ErrorMessage = null;
+
+        if (!decimal.TryParse(OpeningAmountText.Replace("R$", "").Trim(), NumberStyles.Any, new CultureInfo("pt-BR"),
+                out decimal amount))
         {
-            var msgBox = new MessageBox
-            {
-                Title = "Info",
-                Content = "Valor inválido.",
-                CloseButtonText = "OK",
-                MaxWidth = 400
-            };
-            await msgBox.ShowDialogAsync();
+            ErrorMessage = "Valor inválido.";
             return;
         }
 
@@ -502,90 +534,66 @@ public class CashViewModel : Notifier, ICashViewModel
 
             if (success)
             {
-                var msgBox = new MessageBox
-                {
-                    Title = "Info",
-                    Content = "Caixa aberto com sucesso.",
-                    CloseButtonText = "OK",
-                    MaxWidth = 400
-                };
-                await msgBox.ShowDialogAsync();
-                IsOpenCashModalVisible = false;
-                CheckCashStatus();
+                ErrorMessage = null;
+                OpeningAmountText = "0,00"; 
+                await Task.Delay(500);
+                CheckCashStatus(); 
             }
             else
             {
-                var msgBox = new MessageBox
-                {
-                    Title = "Info",
-                    Content = "Falha ao abrir o caixa.",
-                    CloseButtonText = "OK",
-                    MaxWidth = 400
-                };
-                await msgBox.ShowDialogAsync();
+                ErrorMessage = "Falha ao abrir o caixa.";
             }
         }
-        finally { IsBusy = false; }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+            
+            if (ex.Message.Contains("já possui") || ex.Message.Contains("aberto"))
+            {
+                await Task.Delay(500);
+                CheckCashStatus();
+            }
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private async void OnCloseCash(object? _)
     {
+        ErrorMessage = null;
+
         if (_currentSessionId == null)
         {
-            var msgBox = new MessageBox
-            {
-                Title = "Info",
-                Content = "Não há sessão aberta para fechar.",
-                CloseButtonText = "OK",
-                MaxWidth = 400
-            };
-            await msgBox.ShowDialogAsync();
+            ErrorMessage = "Não há sessão aberta para fechar.";
             return;
         }
 
-        var confirmBox = new MessageBox
+        IsBusy = true;
+        try
         {
-            Title = "Confirmação",
-            Content = "Tem certeza que deseja fechar o caixa?",
-            PrimaryButtonText = "Sim",
-            CloseButtonText = "Não"
-        };
+            var dto = new CloseCashSessionDTO { Id = _currentSessionId.Value };
+            bool success = await _apiClient.CloseCashSessionAsync(dto);
 
-        var result = await confirmBox.ShowDialogAsync();
-        if (result == MessageBoxResult.Primary)
-        {
-            IsBusy = true;
-            try
+            if (success)
             {
-                var dto = new CloseCashSessionDTO { Id = _currentSessionId.Value };
-                bool success = await _apiClient.CloseCashSessionAsync(dto);
-
-                if (success)
-                {
-                    var msgBox = new MessageBox
-                    {
-                        Title = "Info",
-                        Content = "Caixa fechado.",
-                        CloseButtonText = "OK",
-                        MaxWidth = 400
-                    };
-                    await msgBox.ShowDialogAsync();
-                    OnCancelSale(null);
-                    CheckCashStatus();
-                }
-                else
-                {
-                    var msgBox = new MessageBox
-                    {
-                        Title = "Info",
-                        Content = "Erro ao fechar o caixa.",
-                        CloseButtonText = "OK",
-                        MaxWidth = 400
-                    };
-                    await msgBox.ShowDialogAsync();
-                }
+                ErrorMessage = null;
+                OnCancelSale(null);
+                CheckCashStatus();
             }
-            finally { IsBusy = false; }
+            else
+            {
+                ErrorMessage = "Erro ao fechar o caixa.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Erro ao fechar caixa: {ex.Message}";
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 }

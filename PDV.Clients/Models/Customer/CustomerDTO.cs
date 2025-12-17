@@ -31,5 +31,7 @@
         /// Data de criação do cliente.
         /// </summary>
         public string CreatedAt { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

@@ -1,6 +1,4 @@
-    using PDV.Clients.ViewModels;
-
-namespace PDV.Clients.ViewModels.Implementations
+namespace PDV.Clients.ViewModels.Implementations.Product
 {
     /// <summary>
     /// ViewModel para exibição de item na lista Master de produtos.

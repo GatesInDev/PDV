@@ -71,5 +71,12 @@ namespace PDV.Infrastructure.Repositories
                 .Where(c => c.Name.Contains(name))
                 .ToListAsync();
         }
+
+        public async Task UpdateCustomerAsync(Customer customer)
+        {
+            _context.Customers.Update(customer);
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

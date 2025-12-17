@@ -39,5 +39,7 @@
         /// Navegação para a venda associada ao cliente.
         /// </summary>
         public List<Sale> Sales { get; set; } = new List<Sale>();
+
+        public bool IsActive { get; set; }
     }
 }

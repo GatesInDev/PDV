@@ -2,7 +2,7 @@
 
 namespace PDV.Application.DTOs.Customer
 {
-    public class CreateCustomerDTO
+    public class UpdateCustomerDTO
     {
         /// <summary>
         /// Nome do cliente.

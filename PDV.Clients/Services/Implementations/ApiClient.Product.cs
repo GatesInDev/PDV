@@ -33,7 +33,7 @@ namespace PDV.Clients.Services.Implementations
                 var products = await _httpClient.GetFromJsonAsync<List<ProductDTO>>(
                     $"{ProductEndpoint}/GetByName/{Uri.EscapeDataString(name)}"
                 );
-                return products ?? new List<ProductDTO>();
+                return products.Where(p => p.IsActive == true).ToList() ?? new List<ProductDTO>();
             }
             catch (HttpRequestException ex)
             {

@@ -8,7 +8,7 @@ using Wpf.Ui.Input;
 using Wpf.Ui.Controls;
 using System.Linq;
 
-namespace PDV.Clients.ViewModels.Implementations;
+namespace PDV.Clients.ViewModels.Implementations.Product;
 
 public class ProductViewModel : Notifier, IProductViewModel
 {

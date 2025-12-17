@@ -15,7 +15,7 @@ namespace PDV.Infrastructure.Repositories
         /// <summary>
         /// Construtor do repositório de sessões de caixa.
         /// </summary>
-        /// <param name="context">Acesso ao bando de dados.</param>
+        /// <param name="context">Acesso ao banco de dados.</param>
         public CashSessionRepository(AppDbContext context)
         {
             _context = context;
@@ -24,8 +24,6 @@ namespace PDV.Infrastructure.Repositories
         /// <summary>
         /// Adiciona uma nova sessão de caixa ao banco de dados.
         /// </summary>
-        /// <param name="session">Objeto com os dados a serem adicionados.</param>
-        /// <returns>Sem retorno.</returns>
         public async Task AddAsync(CashSession session)
         {
             await _context.Set<CashSession>().AddAsync(session);
@@ -35,8 +33,6 @@ namespace PDV.Infrastructure.Repositories
         /// <summary>
         /// Retorna uma sessão de caixa pelo seu Id.
         /// </summary>
-        /// <param name="id">Identificador da sessão a ser encontrada.</param>
-        /// <returns>Objeto com os dados da sessão buscada.</returns>
         public async Task<CashSession?> GetByIdAsync(Guid id)
         {
             return await _context.Set<CashSession>()
@@ -46,9 +42,9 @@ namespace PDV.Infrastructure.Repositories
         }
 
         /// <summary>
-        /// Retorna a sessão de caixa que está atualmente aberta.
+        /// Retorna a sessão de caixa que está atualmente aberta (sem ClosedAt).
+        /// ⚠️ DEPRECATED: Use GetOpenSessionByOperatorAsync em vez disso.
         /// </summary>
-        /// <returns>A sessão que está atualmente aberta, ou seja, não tem fechamento.</returns>
         public async Task<CashSession?> GetOpenSessionAsync()
         {
             return await _context.Set<CashSession>()
@@ -56,10 +52,17 @@ namespace PDV.Infrastructure.Repositories
         }
 
         /// <summary>
+        /// Retorna a sessão aberta de um operador específico.
+        /// </summary>
+        public async Task<CashSession?> GetOpenSessionByOperatorAsync(string operatorName)
+        {
+            return await _context.Set<CashSession>()
+                                 .FirstOrDefaultAsync(c => c.ClosedAt == null && c.OperatorName == operatorName);
+        }
+
+        /// <summary>
         /// Atualiza os dados de uma sessão de caixa no banco de dados.
         /// </summary>
-        /// <param name="session">Objeto com os dados a serem atualiados.</param>
-        /// <returns>Sem retorno.</returns>
         public async Task UpdateAsync(CashSession session)
         {
             _context.Set<CashSession>().Update(session);
@@ -69,8 +72,6 @@ namespace PDV.Infrastructure.Repositories
         /// <summary>
         /// Soma todas as vendas da sessão do caixa.
         /// </summary>
-        /// <param name="id">Identificador do caixa.</param>
-        /// <returns>Valor decimal do total.</returns>
         public async Task<decimal> SumOfCashSession(Guid id)
         {
             return await _context.Set<Sale>()

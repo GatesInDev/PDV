@@ -8,11 +8,14 @@
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="Nova Venda"
-    Width="1100"
-    Height="700"
+    Width="1400"
+    Height="900"
+    MinWidth="1000"
+    MinHeight="700"
     ExtendsContentIntoTitleBar="True"
     WindowBackdropType="Mica"
     WindowStartupLocation="CenterScreen"
+    WindowState="Maximized"
     mc:Ignorable="d">
 
     <ui:FluentWindow.Resources>
@@ -23,7 +26,7 @@
             <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="12" />
+            <Setter Property="Padding" Value="16" />
             <Setter Property="Margin" Value="0,0,0,16" />
         </Style>
 
@@ -43,7 +46,7 @@
     </ui:FluentWindow.Resources>
 
     <Grid>
-        <Grid Margin="24" Style="{StaticResource MainContentGridStyle}">
+        <Grid Margin="32" Style="{StaticResource MainContentGridStyle}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -51,19 +54,22 @@
 
             <Grid Grid.Row="0" Margin="0,0,0,24">
                 <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                    <!--  ✅ Botão dinâmico que muda de "Voltar" para "Fechar"  -->
                     <ui:Button
                         Margin="0,0,12,0"
+                        Padding="12,8"
                         Appearance="Secondary"
                         Command="{Binding BackCommand}"
+                        Content="{Binding BackButtonText}"
                         Icon="{ui:SymbolIcon ArrowLeft24}"
-                        ToolTip="Voltar para Dashboard" />
+                        ToolTip="Voltar para Dashboard ou Fechar Aplicação" />
                     <ui:SymbolIcon
                         Margin="0,0,12,0"
-                        FontSize="28"
+                        FontSize="32"
                         Symbol="ReceiptBag24" />
                     <TextBlock
                         VerticalAlignment="Center"
-                        FontSize="24"
+                        FontSize="28"
                         FontWeight="SemiBold"
                         Text="Nova Venda" />
                 </StackPanel>
@@ -71,12 +77,17 @@
                 <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                     <ui:Button
                         Margin="0,0,12,0"
+                        Padding="12,8"
                         Appearance="Secondary"
                         Command="{Binding CloseCashCommand}"
+                        Content="Fechar Caixa"
                         Icon="{ui:SymbolIcon LockClosed24}"
                         ToolTip="Fechar Sessão do Caixa" />
 
-                    <ui:Button Appearance="Danger" Command="{Binding CancelSaleCommand}">
+                    <ui:Button
+                        Padding="12,8"
+                        Appearance="Danger"
+                        Command="{Binding CancelSaleCommand}">
                         <StackPanel Orientation="Horizontal">
                             <ui:SymbolIcon Margin="0,0,8,0" Symbol="Delete24" />
                             <TextBlock Text="Cancelar Venda" />
@@ -85,19 +96,46 @@
                 </StackPanel>
             </Grid>
 
+            <TextBlock
+                Grid.Row="0"
+                Margin="0,0,0,8"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Foreground="#FF5555"
+                Text="{Binding ErrorMessage}"
+                TextWrapping="Wrap">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Style.Triggers>
+                            <Trigger Property="Text" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                            <Trigger Property="Text" Value="">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2.5*" />
-                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="480" />
                 </Grid.ColumnDefinitions>
 
-                <Grid Grid.Column="0" Margin="0,0,24,0">
+                <Grid Grid.Column="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <Border Style="{StaticResource CardBorderStyle}">
+                    <ui:Card
+                        Grid.Row="0"
+                        Margin="0,0,0,16"
+                        Padding="20">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -105,26 +143,24 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Grid>
-                                <ui:AutoSuggestBox
-                                    Grid.Column="0"
-                                    Margin="0,0,15,0"
-                                    DisplayMemberPath="Name"
-                                    ItemsSource="{Binding ProductSuggestions}"
-                                    OriginalItemsSource="{Binding ProductSuggestions}"
-                                    PlaceholderText="Busque nome ou SKU..."
-                                    Text="{Binding SearchProductText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                    <b:Interaction.Triggers>
-                                        <b:EventTrigger EventName="SuggestionChosen">
-                                            <b:InvokeCommandAction Command="{Binding SelectProductCommand}" PassEventArgsToCommand="True" />
-                                        </b:EventTrigger>
-                                    </b:Interaction.Triggers>
-                                </ui:AutoSuggestBox>
-                            </Grid>
+                            <ui:AutoSuggestBox
+                                Grid.Column="0"
+                                Margin="0,0,16,0"
+                                DisplayMemberPath="Name"
+                                ItemsSource="{Binding ProductSuggestions}"
+                                OriginalItemsSource="{Binding ProductSuggestions}"
+                                PlaceholderText="Busque nome ou SKU..."
+                                Text="{Binding SearchProductText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                <b:Interaction.Triggers>
+                                    <b:EventTrigger EventName="SuggestionChosen">
+                                        <b:InvokeCommandAction Command="{Binding SelectProductCommand}" PassEventArgsToCommand="True" />
+                                    </b:EventTrigger>
+                                </b:Interaction.Triggers>
+                            </ui:AutoSuggestBox>
 
                             <ui:TextBox
                                 Grid.Column="1"
-                                Width="80"
+                                Width="100"
                                 Margin="0,0,12,0"
                                 PlaceholderText="Qtd"
                                 Text="{Binding QuantityText}"
@@ -132,62 +168,74 @@
 
                             <ui:Button
                                 Grid.Column="2"
+                                Padding="16,8"
                                 Appearance="Primary"
                                 Command="{Binding AddProductCommand}"
                                 Content="Adicionar"
                                 Icon="{ui:SymbolIcon Add24}" />
                         </Grid>
-                    </Border>
+                    </ui:Card>
 
-                    <ui:DataGrid
-                        x:Name="CartDataGrid"
+                    <ui:Card
                         Grid.Row="1"
-                        AutoGenerateColumns="False"
-                        ItemsSource="{Binding CartItems}"
-                        VerticalScrollBarVisibility="Auto">
-                        <ui:DataGrid.Columns>
-                            <DataGridTextColumn
-                                Width="0.5*"
-                                Binding="{Binding ProductId}"
-                                Header="Cód." />
-                            <DataGridTextColumn
-                                Width="2*"
-                                Binding="{Binding ProductName}"
-                                Header="Produto" />
-                            <DataGridTextColumn
-                                Width="0.7*"
-                                Binding="{Binding UnitPrice, StringFormat=C}"
-                                Header="Preço" />
-                            <DataGridTextColumn
-                                Width="0.5*"
-                                Binding="{Binding Quantity}"
-                                Header="Qtd" />
-                            <DataGridTextColumn
-                                Width="0.7*"
-                                Binding="{Binding TotalPrice, StringFormat=C}"
-                                FontWeight="SemiBold"
-                                Header="Total" />
-                            <DataGridTemplateColumn Width="Auto">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <ui:Button
-                                            Appearance="Transparent"
-                                            Command="{Binding DataContext.RemoveItemCommand, ElementName=CartDataGrid}"
-                                            CommandParameter="{Binding}"
-                                            Icon="{ui:SymbolIcon Delete24}"
-                                            ToolTip="Remover" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </ui:DataGrid.Columns>
-                    </ui:DataGrid>
+                        Padding="0"
+                        VerticalAlignment="Top">
+                        <ui:DataGrid
+                            x:Name="CartDataGrid"
+                            AutoGenerateColumns="False"
+                            CanUserAddRows="False"
+                            CanUserDeleteRows="False"
+                            CanUserResizeColumns="False"
+                            CanUserResizeRows="False"
+                            CanUserSortColumns="False"
+                            IsReadOnly="True"
+                            ItemsSource="{Binding CartItems}"
+                            VerticalScrollBarVisibility="Auto">
+                            <ui:DataGrid.Columns>
+                                <DataGridTextColumn
+                                    Width="1.0*"
+                                    Binding="{Binding ProductId}"
+                                    Header="Cód." />
+                                <DataGridTextColumn
+                                    Width="*"
+                                    Binding="{Binding ProductName}"
+                                    Header="Produto" />
+                                <DataGridTextColumn
+                                    Width="0.6*"
+                                    Binding="{Binding UnitPrice, StringFormat=C}"
+                                    Header="Preço" />
+                                <DataGridTextColumn
+                                    Width="0.6*"
+                                    Binding="{Binding Quantity}"
+                                    Header="Qtd" />
+                                <DataGridTextColumn
+                                    Width="0.6*"
+                                    Binding="{Binding TotalPrice, StringFormat=C}"
+                                    FontWeight="SemiBold"
+                                    Header="Total" />
+                                <DataGridTemplateColumn Width="0.2*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ui:Button
+                                                Appearance="Transparent"
+                                                Command="{Binding DataContext.RemoveItemCommand, ElementName=CartDataGrid}"
+                                                CommandParameter="{Binding}"
+                                                Icon="{ui:SymbolIcon Delete24}"
+                                                ToolTip="Remover" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </ui:DataGrid.Columns>
+                        </ui:DataGrid>
+                    </ui:Card>
                 </Grid>
 
-                <StackPanel Grid.Column="1">
-                    <Border Padding="16" Style="{StaticResource CardBorderStyle}">
+                <StackPanel Grid.Column="2">
+                    <ui:Card Margin="0,0,0,16" Padding="20">
                         <StackPanel>
                             <TextBlock
-                                Margin="0,0,0,8"
+                                Margin="0,0,0,12"
+                                FontSize="16"
                                 FontWeight="SemiBold"
                                 Text="Cliente" />
 
@@ -195,7 +243,7 @@
                                 DisplayMemberPath="Name"
                                 ItemsSource="{Binding CustomerSuggestions}"
                                 OriginalItemsSource="{Binding CustomerSuggestions}"
-                                PlaceholderText="Busque nome ou CPF..."
+                                PlaceholderText="Busque por nome..."
                                 Text="{Binding CustomerSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                 <b:Interaction.Triggers>
                                     <b:EventTrigger EventName="SuggestionChosen">
@@ -205,23 +253,23 @@
                             </ui:AutoSuggestBox>
 
                             <TextBlock
-                                Margin="0,8,0,0"
-                                FontSize="12"
-                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Margin="0,12,0,0"
+                                FontSize="13"
+                                Foreground="#999999"
                                 Text="{Binding SelectedCustomerName, FallbackValue='Cliente não identificado'}" />
                         </StackPanel>
-                    </Border>
+                    </ui:Card>
 
-                    <Border Padding="20" Style="{StaticResource CardBorderStyle}">
+                    <ui:Card Padding="20">
                         <StackPanel>
                             <TextBlock
-                                Margin="0,0,0,16"
+                                Margin="0,0,0,20"
                                 FontSize="18"
                                 FontWeight="SemiBold"
                                 Text="Resumo" />
 
-                            <Grid Margin="0,0,0,8">
-                                <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="Subtotal" />
+                            <Grid Margin="0,0,0,12">
+                                <TextBlock Foreground="#999999" Text="Subtotal" />
                                 <TextBlock
                                     HorizontalAlignment="Right"
                                     FontWeight="SemiBold"
@@ -231,10 +279,10 @@
                             <Grid Margin="0,0,0,16">
                                 <TextBlock
                                     VerticalAlignment="Center"
-                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Foreground="#999999"
                                     Text="Desconto" />
                                 <ui:TextBox
-                                    Width="100"
+                                    Width="120"
                                     HorizontalAlignment="Right"
                                     PlaceholderText="R$ 0,00"
                                     Text="{Binding DiscountValue}"
@@ -246,23 +294,24 @@
                             <StackPanel Margin="0,0,0,24" HorizontalAlignment="Right">
                                 <TextBlock
                                     HorizontalAlignment="Right"
-                                    FontSize="14"
+                                    FontSize="13"
+                                    Foreground="#999999"
                                     Text="TOTAL" />
                                 <TextBlock
                                     HorizontalAlignment="Right"
-                                    FontSize="36"
+                                    FontSize="40"
                                     FontWeight="Bold"
                                     Foreground="{DynamicResource SystemFillColorSuccessBrush}"
                                     Text="{Binding FinalTotal, StringFormat=C}" />
                             </StackPanel>
 
                             <TextBlock
-                                Margin="0,0,0,8"
+                                Margin="0,0,0,12"
                                 FontWeight="SemiBold"
-                                Text="Pagamento" />
+                                Text="Forma de Pagamento" />
 
                             <ComboBox
-                                Margin="0,0,0,24"
+                                Margin="0,0,0,20"
                                 HorizontalAlignment="Stretch"
                                 SelectedValue="{Binding SelectedPaymentMethod}">
                                 <sys:String>Dinheiro</sys:String>
@@ -272,7 +321,9 @@
                             </ComboBox>
 
                             <ui:Button
-                                Height="45"
+                                Height="50"
+                                Margin="0,0,0,8"
+                                Padding="0,12"
                                 HorizontalAlignment="Stretch"
                                 Appearance="Primary"
                                 Command="{Binding FinalizeSaleCommand}">
@@ -282,15 +333,14 @@
                                 </StackPanel>
                             </ui:Button>
                         </StackPanel>
-                    </Border>
+                    </ui:Card>
                 </StackPanel>
             </Grid>
         </Grid>
 
         <Grid Background="#99000000" Visibility="{Binding IsOpenCashModalVisible, Converter={StaticResource BoolToVis}}">
-
             <Border
-                Width="420"
+                Width="480"
                 Padding="32"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -306,17 +356,14 @@
                 </Border.Effect>
 
                 <StackPanel>
-
-
-
                     <ui:SymbolIcon
-                        Margin="0,16,0,16"
-                        FontSize="48"
+                        Margin="0,16,0,20"
+                        FontSize="56"
                         Foreground="{DynamicResource SystemFillColorCautionBrush}"
                         Symbol="Money24" />
 
                     <TextBlock
-                        Margin="0,0,0,8"
+                        Margin="0,0,0,12"
                         HorizontalAlignment="Center"
                         FontSize="24"
                         FontWeight="Bold"
@@ -325,13 +372,13 @@
                     <TextBlock
                         Margin="0,0,0,24"
                         HorizontalAlignment="Center"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Foreground="#999999"
                         Text="O caixa está fechado. Informe o fundo de troco para iniciar."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
 
                     <TextBlock
-                        Margin="0,0,0,6"
+                        Margin="0,0,0,8"
                         FontWeight="SemiBold"
                         Text="Valor Inicial (R$)" />
 
@@ -343,18 +390,20 @@
                         TextAlignment="Center" />
 
                     <ui:Button
+                        Height="45"
                         HorizontalAlignment="Stretch"
                         Appearance="Primary"
                         Command="{Binding OpenCashCommand}"
-                        Content="Abrir Caixa e Iniciar Vendas"
+                        Content="{Binding OpenCashButtonText}"
                         Icon="{ui:SymbolIcon Checkmark24}" />
 
                     <ui:Button
-                        Margin="0,10,0,0"
+                        Height="45"
+                        Margin="0,12,0,0"
                         HorizontalAlignment="Stretch"
                         Appearance="Secondary"
                         Command="{Binding BackCommand}"
-                        Content="Voltar para Dashboard"
+                        Content="{Binding BackButtonText}"
                         Icon="{ui:SymbolIcon ArrowLeft24}" />
                 </StackPanel>
             </Border>

@@ -4,6 +4,9 @@ using PDV.Clients.Views;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
+using PDV.Clients.ViewModels.Implementations.Category;
+using PDV.Clients.ViewModels.Implementations.Customer;
+using PDV.Clients.ViewModels.Implementations.Product;
 using PDV.Clients.ViewModels.Interfaces;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Input;
@@ -13,6 +16,7 @@ namespace PDV.Clients.ViewModels.Implementations
     public class DashboardViewModel : Notifier, IDashboardViewModel
     {
         private readonly IApiClient _dashboardService;
+        private readonly IAuthenticationService _authService;
 
         public int TotalUsers
         {
@@ -61,17 +65,22 @@ namespace PDV.Clients.ViewModels.Implementations
         public ICommand RefreshCommand { get; }
         public ICommand NewSaleCommand { get; }
         public ICommand NewUserCommand { get; }
+        public ICommand NewCustomerCommand { get; }
+        public ICommand NewCategoryCommand { get; }
         public ICommand NewProductCommand { get; }
 
         private bool _isBusy;
 
-        public DashboardViewModel(IApiClient dashboardService)
+        public DashboardViewModel(IApiClient dashboardService, IAuthenticationService authService)
         {
             _dashboardService = dashboardService;
+            _authService = authService;
             RefreshCommand = new RelayCommand<object>(Refresh);
             NewSaleCommand = new RelayCommand<object>(NewSale);
             NewUserCommand = new RelayCommand<object>(NewUser);
+            NewCustomerCommand = new RelayCommand<object>(NewCustomer);
             NewProductCommand = new RelayCommand<object>(NewProduct);
+            NewCategoryCommand = new RelayCommand<object>(NewCategory);
 
             _ = LoadInitialAsync();
         }
@@ -132,7 +141,8 @@ namespace PDV.Clients.ViewModels.Implementations
         {
             try
             {
-                var cashVm = new CashViewModel(_dashboardService);
+
+                var cashVm = new CashViewModel(_dashboardService, _authService, hasDashboardAccess: true);
 
                 var cashWindow = new CashView(cashVm);
 
@@ -147,8 +157,8 @@ namespace PDV.Clients.ViewModels.Implementations
             {
                 var msgBox = new Wpf.Ui.Controls.MessageBox
                 {
-                    Title = "Info",
-                    Content = "Valor inválido.",
+                    Title = "Erro",
+                    Content = $"Erro ao abrir Nova Venda: {ex.Message}",
                     CloseButtonText = "OK",
                     MaxWidth = 400
                 };
@@ -156,6 +166,61 @@ namespace PDV.Clients.ViewModels.Implementations
             }
         }
 
+        private async void NewCustomer(object? _)
+        {
+            try
+            {
+                var customerVm = new CustomerViewModel(_dashboardService);
+
+                var customerWindow = new CustomerView(customerVm);
+
+                customerVm.RequestClose += () =>
+                {
+                    customerWindow.Close();
+                };
+
+                customerWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                var msgBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Erro",
+                    Content = $"Erro ao abrir Clientes: {ex.Message}",
+                    CloseButtonText = "OK",
+                    MaxWidth = 400
+                };
+                await msgBox.ShowDialogAsync();
+            }
+        }
+
+        private async void NewCategory(object? _)
+        {
+            try
+            {
+                var categoryVm = new CategoryViewModel(_dashboardService);
+
+                var categoryWindow = new CategoryView(categoryVm);
+
+                categoryVm.RequestClose += () =>
+                {
+                    categoryWindow.Close();
+                };
+
+                categoryWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                var msgBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Erro",
+                    Content = $"Erro ao abrir Categorias: {ex.Message}",
+                    CloseButtonText = "OK",
+                    MaxWidth = 400
+                };
+                await msgBox.ShowDialogAsync();
+            }
+        }
 
         private void NewUser(object? _)
         {
@@ -181,8 +246,8 @@ namespace PDV.Clients.ViewModels.Implementations
             {
                 var msgBox = new Wpf.Ui.Controls.MessageBox
                 {
-                    Title = "Info",
-                    Content = "Valor inválido.",
+                    Title = "Erro",
+                    Content = $"Erro ao abrir Produtos: {ex.Message}",
                     CloseButtonText = "OK",
                     MaxWidth = 400
                 };

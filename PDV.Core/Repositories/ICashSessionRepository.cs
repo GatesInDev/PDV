@@ -23,9 +23,17 @@ namespace PDV.Core.Repositories
 
         /// <summary>
         /// Obtém a sessão de caixa atualmente aberta, se houver.
+        /// ⚠️ DEPRECATED: Use GetOpenSessionByOperatorAsync em vez disso.
         /// </summary>
         /// <returns>Objeto <see cref="CashSession"/> da sessão aberta, ou <c>null</c> se nenhuma estiver aberta.</returns>
         Task<CashSession?> GetOpenSessionAsync();
+
+        /// <summary>
+        /// Obtém a sessão aberta de um operador específico.
+        /// </summary>
+        /// <param name="operatorName">Nome do operador.</param>
+        /// <returns>Objeto <see cref="CashSession"/> da sessão aberta do operador, ou <c>null</c> se nenhuma estiver aberta.</returns>
+        Task<CashSession?> GetOpenSessionByOperatorAsync(string operatorName);
 
         /// <summary>
         /// Atualiza os dados de uma sessão de caixa existente.

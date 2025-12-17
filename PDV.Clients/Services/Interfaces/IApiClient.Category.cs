@@ -4,12 +4,11 @@ namespace PDV.Clients.Services.Interfaces
 {
     public partial interface IApiClient
     {
-        /*Task AddAsync(CreateCategoryDTO category);
+        Task CreateCategoryAsync(CreateCategoryDTO category);
 
-        Task<CategoryDetailsDTO> GetByIdAsync(int id);
-
-        Task UpdateAsync(UpdateCategoryDTO category);
-        */
+        Task UpdateCategoryAsync(int id, UpdateCategoryDTO category);
+        
         Task<List<CategoryDTO>> GetAllCategoriesAsync();
+        Task DeleteCategoryAsync(int id);
     }
 }
