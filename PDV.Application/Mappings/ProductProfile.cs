@@ -23,8 +23,10 @@ namespace PDV.Application.Mappings
                             opt => opt.MapFrom(src => src.MetricUnit));
 
             CreateMap<UpdateProductDTO, Product>()
-                .ForMember(dest => dest.CategoryId, 
-                            opt => opt.MapFrom(src => src.CategoryId));
+                .ForMember(dest => dest.CategoryId,
+                    opt => opt.MapFrom(src => src.CategoryId))
+                .ForPath(dest => dest.Stock.Quantity,
+                    opt => opt.MapFrom(src => src.Quantity));
         }
     }
 }

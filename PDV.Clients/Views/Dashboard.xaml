@@ -43,6 +43,8 @@
             </ui:Button>
         </Grid>
 
+
+
         <UniformGrid
             Grid.Row="1"
             Margin="0,0,0,24"
@@ -160,6 +162,12 @@
 
                     <ui:DataGrid
                         AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserResizeColumns="False"
+                        CanUserResizeRows="False"
+                        CanUserSortColumns="False"
+                        IsReadOnly="True"
                         ItemsSource="{Binding RecentTransactions}"
                         VerticalScrollBarVisibility="Auto">
                         <ui:DataGrid.Columns>
@@ -202,7 +210,7 @@
                         <ui:CardAction
                             Margin="0,12,0,0"
                             Command="{Binding NewUserCommand}"
-                            Content="Novo Usuário"
+                            Content="Usuários"
                             Icon="{ui:SymbolIcon PersonAdd24}"
                             ToolTip="Adicionar um novo membro à equipe." />
 
@@ -226,6 +234,13 @@
                             Content="Categorias"
                             Icon="{ui:SymbolIcon Production24}"
                             ToolTip="Organizar categorias de produtos." />
+
+                        <ui:CardAction
+                            Margin="0,12,0,0"
+                            Command="{Binding NewReportCommand}"
+                            Content="Relatórios"
+                            Icon="{ui:SymbolIcon Book24}"
+                            ToolTip="Gerar relatórios." />
 
                     </StackPanel>
                 </ui:Card>
@@ -279,3 +294,4 @@
         </Grid>
     </Grid>
 </ui:FluentWindow>
+

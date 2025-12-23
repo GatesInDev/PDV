@@ -39,5 +39,7 @@ namespace PDV.Application.DTOs.Product
         /// </summary>
         [Required(ErrorMessage = "O identificador da categoria é obrigatório.")]
         public int CategoryId { get; set; }  //FK
+
+        public int Quantity { get; set; }
     }
 }

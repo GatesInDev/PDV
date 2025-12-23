@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace PDV.Clients.ViewModels.Implementations.Customer;
 
 public class CustomerDetailViewModel : Notifier
@@ -40,4 +42,21 @@ public class CustomerDetailViewModel : Notifier
         !string.IsNullOrWhiteSpace(Email) &&
         !string.IsNullOrWhiteSpace(Address) &&
         Age > 0;
+
+    public bool IsValidEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            return false;
+
+        try
+        {
+            return Regex.IsMatch(email,
+                @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+                RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            return false;
+        }
+    }
 }

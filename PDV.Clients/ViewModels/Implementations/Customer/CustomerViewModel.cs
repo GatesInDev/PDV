@@ -2,10 +2,11 @@ using PDV.Application.DTOs.Customer;
 using PDV.Clients.Services.Interfaces;
 using PDV.Clients.ViewModels.Interfaces;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
-using Wpf.Ui.Input;
-using Wpf.Ui.Controls;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows.Input;
+using Wpf.Ui.Controls;
+using Wpf.Ui.Input;
 
 namespace PDV.Clients.ViewModels.Implementations.Customer;
 
@@ -148,31 +149,92 @@ public class CustomerViewModel : Notifier, ICustomerViewModel
     {
         if (SelectedCustomer == null) return;
 
-        if (!SelectedCustomer.IsValid)
+        var name = SelectedCustomer.Name?.Trim() ?? string.Empty;
+        var email = SelectedCustomer.Email?.Trim() ?? string.Empty;
+        var address = SelectedCustomer.Address?.Trim() ?? string.Empty;
+        var age = SelectedCustomer.Age;
+
+        ErrorMessage = null;
+
+        if (name.Length < 3 || name.Length > 100)
         {
-            ErrorMessage = "Preencha todos os campos obrigatórios (*).";
+            ErrorMessage = "O Nome deve ter entre 3 e 100 caracteres.";
+            return;
+        }
+
+        if (!Regex.IsMatch(name, @"^[a-zA-Z\u00C0-\u00FF\s]+$"))
+        {
+            ErrorMessage = "O Nome deve conter apenas letras e espaços (sem números ou símbolos).";
+            return;
+        }
+
+        if (!name.Contains(" "))
+        {
+            ErrorMessage = "Por favor, informe o Nome Completo (Nome e Sobrenome).";
+            return;
+        }
+
+        if (email.Length > 150)
+        {
+            ErrorMessage = "O E-mail é muito longo (máximo 150 caracteres).";
+            return;
+        }
+
+        string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+        if (!Regex.IsMatch(email, emailPattern, RegexOptions.IgnoreCase))
+        {
+            ErrorMessage = "O formato do e-mail é inválido. Exemplo: cliente@dominio.com";
+            return;
+        }
+
+        if (age > 120)
+        {
+            ErrorMessage = "A idade informada (acima de 120) parece incorreta.";
+            return;
+        }
+
+        if (address.Length < 10)
+        {
+            ErrorMessage = "O Endereço está muito curto. Detalhe melhor (Rua, Número, Bairro).";
+            return;
+        }
+
+        if (address.Length > 255)
+        {
+            ErrorMessage = "O Endereço excede o limite de 255 caracteres.";
+            return;
+        }
+
+        if (!Regex.IsMatch(address, @"\d+"))
+        {
+            ErrorMessage = "O Endereço deve conter o número da residência.";
+            return;
+        }
+
+        if (!Regex.IsMatch(address, @"[a-zA-Z]"))
+        {
+            ErrorMessage = "O Endereço deve conter o nome da rua/avenida.";
             return;
         }
 
         IsBusy = true;
-        ErrorMessage = null;
 
         try
         {
             var createDto = new CreateCustomerDTO
             {
-                Name = SelectedCustomer.Name,
-                Email = SelectedCustomer.Email,
-                Age = SelectedCustomer.Age,
-                Address = SelectedCustomer.Address
+                Name = name,   
+                Email = email, 
+                Age = age,
+                Address = address 
             };
 
             var updateDto = new UpdateCustomerDTO
             {
-                Name = SelectedCustomer.Name,
-                Email = SelectedCustomer.Email,
-                Age = SelectedCustomer.Age,
-                Address = SelectedCustomer.Address
+                Name = name,
+                Email = email,
+                Age = age,
+                Address = address
             };
 
             if (SelectedCustomer.IsNewCustomer)

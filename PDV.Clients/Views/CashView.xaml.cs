@@ -1,5 +1,6 @@
 ﻿using PDV.Clients.ViewModels.Implementations;
 using PDV.Clients.ViewModels.Interfaces;
+using System.Windows.Controls;
 using Wpf.Ui.Controls;
 
 namespace PDV.Clients.Views
@@ -13,6 +14,13 @@ namespace PDV.Clients.Views
         {
             InitializeComponent();
             this.DataContext = view;
+        }
+        private void OnCurrencyTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is Wpf.Ui.Controls.TextBox uiBox)
+            {
+                uiBox.CaretIndex = uiBox.Text.Length;
+            }
         }
     }
 }

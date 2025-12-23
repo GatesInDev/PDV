@@ -103,6 +103,9 @@
                 VerticalContentAlignment="Stretch">
                 <ui:DataGrid
                     AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    CanUserResizeRows="False"
                     HeadersVisibility="Column"
                     IsReadOnly="True"
                     ItemsSource="{Binding Products}"

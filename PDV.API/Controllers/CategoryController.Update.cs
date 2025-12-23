@@ -15,7 +15,7 @@ namespace PDV.API.Controllers
         /// <response code="200">Categoria atualizada com sucesso.</response>
         /// <response code="400">Erro na requisição, dados inválidos.</response>
         [Authorize(Roles = "Administrador,Estoquista")]
-        [HttpPost("{id}")]
+        [HttpPut("{id}")]
         [ProducesResponseType(typeof(CategoryDetailsDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCategoryDTO dto)

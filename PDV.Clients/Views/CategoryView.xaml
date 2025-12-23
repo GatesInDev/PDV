@@ -1,5 +1,4 @@
-
-<ui:FluentWindow
+﻿<ui:FluentWindow
     x:Class="PDV.Clients.Views.CategoryView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,14 +6,17 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="Categorias"
-    Width="1200"
-    Height="750"
+    Width="1400"
+    Height="900"
+    MinWidth="1000"
+    MinHeight="700"
     ExtendsContentIntoTitleBar="True"
     WindowBackdropType="Mica"
     WindowStartupLocation="CenterScreen"
+    WindowState="Maximized"
     mc:Ignorable="d">
 
-    <Grid Margin="24">
+    <Grid Margin="32">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -27,25 +29,29 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                <!--  ✅ Botão dinâmico que muda de "Voltar" para "Fechar"  -->
                 <ui:Button
                     Margin="0,0,12,0"
+                    Padding="12,8"
                     Appearance="Secondary"
                     Command="{Binding BackCommand}"
+                    Content="{Binding BackButtonText}"
                     Icon="{ui:SymbolIcon ArrowLeft24}"
-                    ToolTip="Voltar para Dashboard" />
+                    ToolTip="Voltar para Dashboard ou Fechar Aplicação" />
                 <ui:SymbolIcon
                     Margin="0,0,12,0"
-                    FontSize="28"
+                    FontSize="32"
                     Symbol="Production24" />
                 <TextBlock
-                    FontSize="24"
+                    FontSize="28"
                     FontWeight="SemiBold"
                     Text="Categorias" />
             </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <ui:Button
-                    Margin="0,0,8,0"
+                    Margin="0,0,12,0"
+                    Padding="12,8"
                     Appearance="Secondary"
                     Command="{Binding RefreshCommand}"
                     Icon="{ui:SymbolIcon ArrowSync24}">
@@ -53,6 +59,7 @@
                 </ui:Button>
 
                 <ui:Button
+                    Padding="12,8"
                     Appearance="Primary"
                     Command="{Binding NewCategoryCommand}"
                     Icon="{ui:SymbolIcon Add24}">
@@ -86,9 +93,9 @@
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
-                <ColumnDefinition Width="12" />
-                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="420" />
             </Grid.ColumnDefinitions>
 
             <ui:Card
@@ -98,6 +105,9 @@
                 VerticalContentAlignment="Stretch">
                 <ui:DataGrid
                     AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    CanUserResizeRows="False"
                     HeadersVisibility="Column"
                     IsReadOnly="True"
                     ItemsSource="{Binding Categories}"
@@ -112,7 +122,7 @@
                         <DataGridTextColumn
                             Width="*"
                             Binding="{Binding Description}"
-                            Header="Descricao" />
+                            Header="Descrição" />
                     </ui:DataGrid.Columns>
                 </ui:DataGrid>
             </ui:Card>
@@ -120,8 +130,8 @@
             <ScrollViewer Grid.Column="2">
                 <ui:Card
                     Padding="24"
-                    VerticalAlignment="Stretch"
-                    VerticalContentAlignment="Stretch">
+                    VerticalAlignment="Top"
+                    VerticalContentAlignment="Top">
 
                     <Grid>
                         <Grid DataContext="{Binding SelectedCategory}">
@@ -144,52 +154,50 @@
 
                             <TextBlock
                                 Grid.Row="0"
-                                Margin="0,0,0,16"
-                                FontSize="18"
+                                Margin="0,0,0,20"
+                                FontSize="20"
                                 FontWeight="SemiBold"
                                 Text="Detalhes da Categoria" />
 
-                            <StackPanel Grid.Row="1">
-                                <TextBlock
-                                    Margin="0,0,0,6"
-                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                    Text="Nome *" />
-                                <ui:TextBox
-                                    Margin="0,0,0,12"
-                                    PlaceholderText="Nome da categoria"
-                                    Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                                <StackPanel>
+                                    <TextBlock
+                                        Margin="0,0,0,8"
+                                        FontWeight="SemiBold"
+                                        Foreground="#999999"
+                                        Text="Nome *" />
+                                    <ui:TextBox
+                                        Margin="0,0,0,16"
+                                        PlaceholderText="Nome da categoria"
+                                        Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
 
-                                <TextBlock
-                                    Margin="0,0,0,6"
-                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                    Text="Descricao *" />
-                                <ui:TextBox
-                                    Margin="0,0,0,12"
-                                    PlaceholderText="Descricao da categoria"
-                                    Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" />
-
-                                <Grid Margin="0,0,0,12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="12" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                </Grid>
-                            </StackPanel>
+                                    <TextBlock
+                                        Margin="0,0,0,8"
+                                        FontWeight="SemiBold"
+                                        Foreground="#999999"
+                                        Text="Descrição *" />
+                                    <ui:TextBox
+                                        Margin="0,0,0,16"
+                                        PlaceholderText="Descrição da categoria"
+                                        Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                            </ScrollViewer>
 
                             <StackPanel
                                 Grid.Row="2"
                                 Margin="0,16,0,0"
-                                HorizontalAlignment="Right"
+                                HorizontalAlignment="Stretch"
                                 Orientation="Horizontal">
                                 <ui:Button
                                     Margin="0,0,8,0"
+                                    Padding="12,8"
                                     Appearance="Secondary"
                                     Command="{Binding DataContext.DeleteCategoryCommand, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}"
                                     Content="Excluir"
                                     Icon="{ui:SymbolIcon Delete24}" />
 
                                 <ui:Button
+                                    Padding="12,8"
                                     Appearance="Primary"
                                     Command="{Binding DataContext.SaveCategoryCommand, RelativeSource={RelativeSource AncestorType=ui:FluentWindow}}"
                                     Content="Salvar"
@@ -202,7 +210,7 @@
                             VerticalAlignment="Center"
                             FontSize="16"
                             Foreground="Gray"
-                            Text="Selecione uma categoria ou crie uma novo.">
+                            Text="Selecione uma categoria ou crie uma nova.">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="Visibility" Value="Collapsed" />

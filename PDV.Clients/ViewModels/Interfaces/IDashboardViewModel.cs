@@ -18,6 +18,9 @@ namespace PDV.Clients.ViewModels.Interfaces
         ICommand RefreshCommand { get; }
         ICommand NewSaleCommand { get; }
         ICommand NewUserCommand { get; }
+        ICommand NewCustomerCommand { get; }
+        ICommand NewCategoryCommand { get; }
         ICommand NewProductCommand { get; }
+        ICommand NewReportCommand { get; }
     }
 }

@@ -1,12 +1,13 @@
 ﻿using PDV.Application.DTOs.Cash;
 using PDV.Application.DTOs.Product;
 using PDV.Application.DTOs.Sales;
-using PDV.Clients.Services.Interfaces;
 using PDV.Clients.Models;
+using PDV.Clients.Services.Interfaces;
+using PDV.Clients.ViewModels.Interfaces;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Windows.Input;
-using PDV.Clients.ViewModels.Interfaces;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Input;
 
@@ -96,9 +97,14 @@ public class CashViewModel : Notifier, ICashViewModel
         get => _discountValue;
         set
         {
-            _discountValue = value;
-            OnPropertyChanged();
-            RecalculateTotals();
+            string formatted = ApplyCurrencyMask(value);
+
+            if (_discountValue != formatted)
+            {
+                _discountValue = formatted;
+                OnPropertyChanged();
+                RecalculateTotals(); 
+            }
         }
     }
 
@@ -121,6 +127,7 @@ public class CashViewModel : Notifier, ICashViewModel
             OnPropertyChanged();
         }
     }
+
 
     public bool IsBusy
     {
@@ -149,8 +156,13 @@ public class CashViewModel : Notifier, ICashViewModel
         get => _openingAmountText;
         set
         {
-            _openingAmountText = value;
-            OnPropertyChanged();
+            string formatted = ApplyCurrencyMask(value);
+
+            if (_openingAmountText != formatted)
+            {
+                _openingAmountText = formatted;
+                OnPropertyChanged();
+            }
         }
     }
 
@@ -242,32 +254,58 @@ public class CashViewModel : Notifier, ICashViewModel
 
         try
         {
-            if (!int.TryParse(QuantityText, out int quantity) || quantity <= 0)
+            string searchTerm = SearchProductText?.Trim() ?? string.Empty;
+
+            if (searchTerm.Length < 2)
             {
-                ErrorMessage = "Quantidade inválida.";
+                ErrorMessage = "Digite pelo menos 2 caracteres para buscar o produto.";
                 return;
             }
 
-            var productsList = await _apiClient.GetProductsByNameAsync(SearchProductText);
+            string qtyInput = QuantityText?.Trim() ?? "1";
 
+            if (!int.TryParse(qtyInput, out int quantity))
+            {
+                ErrorMessage = "A quantidade informada não é um número válido.";
+                return;
+            }
+
+            if (quantity <= 0)
+            {
+                ErrorMessage = "A quantidade deve ser maior que zero.";
+                return;
+            }
+
+            if (quantity > 1000)
+            {
+                ErrorMessage = "Quantidade muito alta para uma única inserção (Máx: 1000).";
+                return;
+            }
+
+            var productsList = await _apiClient.GetProductsByNameAsync(searchTerm);
             var product = productsList?.FirstOrDefault();
 
             if (product != null)
             {
+                if (!product.IsActive)
+                {
+                    ErrorMessage = "Este produto está inativo e não pode ser vendido.";
+                    return;
+                }
+
                 var existingItem = CartItems.FirstOrDefault(x => x.ProductId == product.Id.ToString());
 
                 if (existingItem != null)
                 {
-                    existingItem.Quantity += quantity;
-
-                    var index = CartItems.IndexOf(existingItem);
-                    CartItems[index] = new CartItemModel
+                    if (existingItem.Quantity + quantity > 10000)
                     {
-                        ProductId = existingItem.ProductId,
-                        ProductName = existingItem.ProductName,
-                        UnitPrice = existingItem.UnitPrice,
-                        Quantity = existingItem.Quantity
-                    };
+                        ErrorMessage = "Limite de quantidade para este item no carrinho atingido.";
+                        return;
+                    }
+
+                    existingItem.Quantity += quantity;
+                    var index = CartItems.IndexOf(existingItem);
+                    CartItems[index] = existingItem;
                 }
                 else
                 {
@@ -313,15 +351,39 @@ public class CashViewModel : Notifier, ICashViewModel
     private void RecalculateTotals()
     {
         SubTotal = CartItems.Sum(i => i.TotalPrice);
+
         decimal discount = 0;
-        if (decimal.TryParse(DiscountValue?.Replace("R$", "").Trim(), NumberStyles.Any, new CultureInfo("pt-BR"),
-                out decimal d))
+        string discountString = DiscountValue?.Replace("R$", "").Replace(" ", "").Trim() ?? "0";
+
+        if (decimal.TryParse(discountString, NumberStyles.Any, new CultureInfo("pt-BR"), out decimal d))
         {
             discount = d;
         }
 
+        if (discount < 0)
+        {
+            ErrorMessage = "O desconto não pode ser negativo.";
+            discount = 0; 
+        }
+
+        if (discount > SubTotal)
+        {
+            ErrorMessage = $"Desconto inválido. O máximo permitido é {SubTotal:C2}.";
+            discount = SubTotal;
+        }
+        else if (discount > 0 && SubTotal > 0 && (discount / SubTotal) > 0.5m)
+        {
+            ErrorMessage = "Atenção: Desconto aplicado superior a 50%.";
+        }
+        else if (string.IsNullOrEmpty(ErrorMessage) || ErrorMessage.Contains("Desconto"))
+        {
+            ErrorMessage = null;
+        }
+
         FinalTotal = SubTotal - discount;
+
         if (FinalTotal < 0) FinalTotal = 0;
+
         ((RelayCommand<object>)FinalizeSaleCommand).NotifyCanExecuteChanged();
     }
 
@@ -336,15 +398,30 @@ public class CashViewModel : Notifier, ICashViewModel
         {
             if (_selectedCustomerId == null || _selectedCustomerId == Guid.Empty)
             {
-                ErrorMessage = "Selecione um cliente para prosseguir.";
+                ErrorMessage = "Selecione um cliente válido para prosseguir.";
                 return;
             }
 
-            if (string.IsNullOrEmpty(SelectedPaymentMethod))
+            if (CartItems.Count == 0)
             {
-                ErrorMessage = "Selecione um método de pagamento.";
+                ErrorMessage = "O carrinho está vazio.";
                 return;
             }
+
+            if (FinalTotal < 0)
+            {
+                ErrorMessage = "Erro crítico: O total da venda não pode ser negativo.";
+                RecalculateTotals();
+                return;
+            }
+
+            var validMethods = new[] { "Dinheiro", "Cartão de Crédito", "Cartão de Débito", "PIX" };
+            if (string.IsNullOrEmpty(SelectedPaymentMethod) || !validMethods.Contains(SelectedPaymentMethod))
+            {
+                ErrorMessage = "Método de pagamento inválido.";
+                return;
+            }
+
 
             var createSaleDto = new CreateSalesDTO
             {
@@ -387,7 +464,7 @@ public class CashViewModel : Notifier, ICashViewModel
 
         try
         {
-            var results = await _apiClient.GetCustomersByNameAsync(query);
+            var results = (await _apiClient.GetCustomersByNameAsync(query)).Where(w => w.IsActive == true);
 
             CustomerSuggestions.Clear();
 
@@ -416,7 +493,7 @@ public class CashViewModel : Notifier, ICashViewModel
 
         try
         {
-            var results = await _apiClient.GetProductsByNameAsync(query);
+            var results = (await _apiClient.GetProductsByNameAsync(query)).Where(w => w.IsActive == true);
 
             ProductSuggestions.Clear();
 
@@ -519,10 +596,23 @@ public class CashViewModel : Notifier, ICashViewModel
     {
         ErrorMessage = null;
 
-        if (!decimal.TryParse(OpeningAmountText.Replace("R$", "").Trim(), NumberStyles.Any, new CultureInfo("pt-BR"),
-                out decimal amount))
+        string amountStr = OpeningAmountText?.Replace("R$", "").Trim() ?? "0";
+
+        if (!decimal.TryParse(amountStr, NumberStyles.Any, new CultureInfo("pt-BR"), out decimal amount))
         {
-            ErrorMessage = "Valor inválido.";
+            ErrorMessage = "Valor de abertura inválido.";
+            return;
+        }
+
+        if (amount < 0)
+        {
+            ErrorMessage = "O valor de abertura não pode ser negativo.";
+            return;
+        }
+
+        if (amount > 5000)
+        {
+            ErrorMessage = "Valor de abertura suspeito (Muito alto). Verifique a pontuação (vírgula).";
             return;
         }
 
@@ -535,19 +625,19 @@ public class CashViewModel : Notifier, ICashViewModel
             if (success)
             {
                 ErrorMessage = null;
-                OpeningAmountText = "0,00"; 
+                OpeningAmountText = "0,00";
                 await Task.Delay(500);
-                CheckCashStatus(); 
+                CheckCashStatus();
             }
             else
             {
-                ErrorMessage = "Falha ao abrir o caixa.";
+                ErrorMessage = "Falha ao abrir o caixa. Tente novamente.";
             }
         }
         catch (Exception ex)
         {
             ErrorMessage = ex.Message;
-            
+
             if (ex.Message.Contains("já possui") || ex.Message.Contains("aberto"))
             {
                 await Task.Delay(500);
@@ -595,5 +685,22 @@ public class CashViewModel : Notifier, ICashViewModel
         {
             IsBusy = false;
         }
+    }
+
+    private string ApplyCurrencyMask(string? input)
+    {
+        string digitsOnly = Regex.Replace(input ?? "", "[^0-9]", "");
+
+        if (string.IsNullOrWhiteSpace(digitsOnly))
+            digitsOnly = "0";
+
+        if (long.TryParse(digitsOnly, out long cents))
+        {
+            decimal value = cents / 100m;
+
+            return value.ToString("C2", new CultureInfo("pt-BR"));
+        }
+
+        return "red";
     }
 }

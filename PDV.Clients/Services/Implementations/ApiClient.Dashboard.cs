@@ -34,7 +34,6 @@ namespace PDV.Clients.Services.Implementations
             {
                 string endpoint = $"api/Sales?startDate={DateTime.MinValue:yyyy-MM-dd}&endDate={DateTime.Today:yyyy-MM-dd}";
 
-                // 1. ALTERADO: Deserializa para o DTO, não para a Entidade Sale
                 var dtoList = await _httpClient.GetFromJsonAsync<IEnumerable<SaleResultDto>>(endpoint);
 
                 if (dtoList == null)

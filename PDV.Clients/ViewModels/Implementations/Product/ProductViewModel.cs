@@ -3,10 +3,11 @@ using PDV.Application.DTOs.Product;
 using PDV.Clients.Services.Interfaces;
 using PDV.Clients.ViewModels.Interfaces;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
-using Wpf.Ui.Input;
-using Wpf.Ui.Controls;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows.Input;
+using Wpf.Ui.Controls;
+using Wpf.Ui.Input;
 
 namespace PDV.Clients.ViewModels.Implementations.Product;
 
@@ -165,35 +166,109 @@ public class ProductViewModel : Notifier, IProductViewModel
     {
         if (SelectedProduct == null) return;
 
-        if (!SelectedProduct.IsValid)
+        var sku = SelectedProduct.Sku?.Trim().ToUpper() ?? string.Empty;
+        var name = SelectedProduct.Name?.Trim() ?? string.Empty;
+        var unit = SelectedProduct.MetricUnit?.Trim().ToLower() ?? "un";
+        var price = SelectedProduct.Price;
+        var quantity = SelectedProduct.StockQuantity;
+        var categoryId = SelectedProduct.CategoryId;
+
+        ErrorMessage = null;
+
+        if (string.IsNullOrWhiteSpace(sku))
         {
-            ErrorMessage = "Preencha todos os campos obrigatórios (*).";
+            ErrorMessage = "O SKU (Código) é obrigatório.";
+            return;
+        }
+
+        if (sku.Length < 3 || sku.Length > 20)
+        {
+            ErrorMessage = "O SKU deve ter entre 3 e 20 caracteres.";
+            return;
+        }
+
+        if (!Regex.IsMatch(sku, @"^[A-Z0-9\-\.]+$"))
+        {
+            ErrorMessage = "O SKU contém caracteres inválidos. Use apenas letras, números, hífen (-) ou ponto (.).";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            ErrorMessage = "O Nome do produto é obrigatório.";
+            return;
+        }
+
+        if (name.Length < 3 || name.Length > 120)
+        {
+            ErrorMessage = "O Nome deve ter entre 3 e 120 caracteres.";
+            return;
+        }
+
+        if (!Regex.IsMatch(name, @"^[a-zA-Z0-9\u00C0-\u00FF\s\.\-\(\)]+$"))
+        {
+            ErrorMessage = "O Nome contém caracteres inválidos.";
+            return;
+        }
+
+        if (price <= 0)
+        {
+            ErrorMessage = "O Preço deve ser maior que zero.";
+            return;
+        }
+
+        if (price > 999999.99m) 
+        {
+            ErrorMessage = "O Preço informado excede o limite permitido pelo sistema.";
+            return;
+        }
+
+        if (quantity < 0)
+        {
+            ErrorMessage = "A quantidade em estoque não pode ser negativa.";
+            return;
+        }
+
+        if (quantity > 1000000)
+        {
+            ErrorMessage = "A quantidade em estoque parece incorreta (valor muito alto).";
+            return;
+        }
+
+        if (unit.Length > 6 || !Regex.IsMatch(unit, @"^[a-z0-9]+$"))
+        {
+            ErrorMessage = "A Unidade de Medida deve ser curta (ex: kg, un, m2).";
+            return;
+        }
+
+        if (categoryId <= 0)
+        {
+            ErrorMessage = "Selecione uma Categoria válida.";
             return;
         }
 
         IsBusy = true;
-        ErrorMessage = null;
 
         try
         {
             var createDto = new CreateProductDTO
             {
-                Sku = SelectedProduct.Sku,
-                Name = SelectedProduct.Name,
-                Price = SelectedProduct.Price,
-                Quantity = SelectedProduct.StockQuantity,
-                MetricUnit = SelectedProduct.MetricUnit,
-                CategoryId = SelectedProduct.CategoryId
+                Sku = sku,       
+                Name = name,      
+                Price = price,
+                Quantity = quantity,
+                MetricUnit = unit, 
+                CategoryId = categoryId
             };
 
             var updateDto = new UpdateProductDTO
             {
-                Sku = SelectedProduct.Sku,
-                Name = SelectedProduct.Name,
-                Price = SelectedProduct.Price,
-                Quantity = SelectedProduct.StockQuantity,
-                MetricUnit = SelectedProduct.MetricUnit,
-                CategoryId = SelectedProduct.CategoryId
+                Sku = sku,
+                Name = name,
+                Price = price,
+                Quantity = quantity,
+                MetricUnit = unit,
+                CategoryId = categoryId
             };
 
             if (SelectedProduct.IsNewProduct)
@@ -205,7 +280,12 @@ public class ProductViewModel : Notifier, IProductViewModel
                 await _apiClient.UpdateProductAsync(SelectedProduct.Id, updateDto);
             }
 
-            var msgBox = new MessageBox { Title = "Sucesso", Content = "Salvo com sucesso!", CloseButtonText = "OK" };
+            var msgBox = new MessageBox
+            {
+                Title = "Sucesso",
+                Content = "Produto salvo com sucesso!",
+                CloseButtonText = "OK"
+            };
             await msgBox.ShowDialogAsync();
 
             SelectedProduct = null;
@@ -214,7 +294,12 @@ public class ProductViewModel : Notifier, IProductViewModel
         catch (Exception ex)
         {
             ErrorMessage = ex.Message;
-            var msgBox = new MessageBox { Title = "Erro", Content = ex.Message, CloseButtonText = "OK" };
+            var msgBox = new MessageBox
+            {
+                Title = "Erro",
+                Content = $"Falha ao salvar: {ex.Message}",
+                CloseButtonText = "OK"
+            };
             await msgBox.ShowDialogAsync();
         }
         finally

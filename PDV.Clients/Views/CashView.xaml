@@ -54,7 +54,6 @@
 
             <Grid Grid.Row="0" Margin="0,0,0,24">
                 <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                    <!--  ✅ Botão dinâmico que muda de "Voltar" para "Fechar"  -->
                     <ui:Button
                         Margin="0,0,12,0"
                         Padding="12,8"
@@ -251,12 +250,6 @@
                                     </b:EventTrigger>
                                 </b:Interaction.Triggers>
                             </ui:AutoSuggestBox>
-
-                            <TextBlock
-                                Margin="0,12,0,0"
-                                FontSize="13"
-                                Foreground="#999999"
-                                Text="{Binding SelectedCustomerName, FallbackValue='Cliente não identificado'}" />
                         </StackPanel>
                     </ui:Card>
 
@@ -284,9 +277,9 @@
                                 <ui:TextBox
                                     Width="120"
                                     HorizontalAlignment="Right"
-                                    PlaceholderText="R$ 0,00"
-                                    Text="{Binding DiscountValue}"
-                                    TextAlignment="Right" />
+                                    Text="{Binding DiscountValue, UpdateSourceTrigger=PropertyChanged}"
+                                    TextAlignment="Right"
+                                    TextChanged="OnCurrencyTextChanged" />
                             </Grid>
 
                             <Separator Margin="0,0,0,16" />
@@ -387,7 +380,8 @@
                         FontSize="18"
                         PlaceholderText="0,00"
                         Text="{Binding OpeningAmountText, UpdateSourceTrigger=PropertyChanged}"
-                        TextAlignment="Center" />
+                        TextAlignment="Center"
+                        TextChanged="OnCurrencyTextChanged" />
 
                     <ui:Button
                         Height="45"

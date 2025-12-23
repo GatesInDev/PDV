@@ -11,6 +11,7 @@ using PDV.Core.Entities;
 using PDV.Clients.ViewModels.Implementations.Customer;
 using PDV.Clients.ViewModels.Implementations.Product;
 using PDV.Clients.ViewModels.Implementations.Category;
+using PDV.Clients.ViewModels.Implementations.User;
 
 namespace PDV.Clients
 {
@@ -35,7 +36,9 @@ namespace PDV.Clients
             services.AddTransient<ICashViewModel, CashViewModel>();
             services.AddTransient<IProductViewModel, ProductViewModel>();
             services.AddTransient<ICustomerViewModel, CustomerViewModel>();
+            services.AddTransient<ICategoryViewModel, CategoryViewModel>();
 
+            services.AddTransient<UserView>();
             services.AddTransient<LoginView>();
             services.AddTransient<Dashboard>();
             services.AddTransient<CashView>();

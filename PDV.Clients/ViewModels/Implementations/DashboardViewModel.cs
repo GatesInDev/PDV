@@ -1,13 +1,15 @@
-using PDV.Clients.Models.Dashboard;
+Ôªøusing PDV.Clients.Models.Dashboard;
 using PDV.Clients.Services.Interfaces;
+using PDV.Clients.ViewModels.Implementations.Category;
+using PDV.Clients.ViewModels.Implementations.Customer;
+using PDV.Clients.ViewModels.Implementations.Product;
+using PDV.Clients.ViewModels.Implementations.User;
+using PDV.Clients.ViewModels.Interfaces;
 using PDV.Clients.Views;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using PDV.Clients.ViewModels.Implementations.Category;
-using PDV.Clients.ViewModels.Implementations.Customer;
-using PDV.Clients.ViewModels.Implementations.Product;
-using PDV.Clients.ViewModels.Interfaces;
+using PDV.Clients.ViewModels.Implementations.Reports;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Input;
 
@@ -68,6 +70,7 @@ namespace PDV.Clients.ViewModels.Implementations
         public ICommand NewCustomerCommand { get; }
         public ICommand NewCategoryCommand { get; }
         public ICommand NewProductCommand { get; }
+        public ICommand NewReportCommand { get; }
 
         private bool _isBusy;
 
@@ -81,6 +84,7 @@ namespace PDV.Clients.ViewModels.Implementations
             NewCustomerCommand = new RelayCommand<object>(NewCustomer);
             NewProductCommand = new RelayCommand<object>(NewProduct);
             NewCategoryCommand = new RelayCommand<object>(NewCategory);
+            NewReportCommand = new RelayCommand<object>(NewReport);
 
             _ = LoadInitialAsync();
         }
@@ -103,11 +107,13 @@ namespace PDV.Clients.ViewModels.Implementations
             try
             {
                 var life = await _dashboardService.GetLife();
+                var cashSessions = await _dashboardService.GetCashSessionsAsync();
                 var summary = await _dashboardService.GetSummaryAsync();
+                var users = await _dashboardService.GetAllUsersAsync();
                 if (summary != null)
                 {
-                    TotalUsers = 0;
-                    ActiveSessions = 0;
+                    TotalUsers = users.Count;
+                    ActiveSessions = cashSessions.Count;
                     TransactionsToday = summary.DailySales;
                     RevenueToday = summary.DailyIncome;
                     ServerStatus = life.Status;
@@ -198,7 +204,7 @@ namespace PDV.Clients.ViewModels.Implementations
         {
             try
             {
-                var categoryVm = new CategoryViewModel(_dashboardService);
+                var categoryVm = new CategoryViewModel(_dashboardService, hasDashboardAccess: true);
 
                 var categoryWindow = new CategoryView(categoryVm);
 
@@ -222,9 +228,60 @@ namespace PDV.Clients.ViewModels.Implementations
             }
         }
 
-        private void NewUser(object? _)
+        private async void NewReport(object? _)
         {
-            // TODO: implementar fluxo de criaÁ„o de usu·rio.
+            try
+            {
+                var reportVm = new ReportsViewModel(_dashboardService);
+
+                var reportWindow = new ReportsWindow(reportVm);
+
+                reportVm.RequestClose += () =>
+                {
+                    reportWindow.Close();
+                };
+
+                reportWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                var msgBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Erro",
+                    Content = $"Erro ao abrir Relat√≥rios: {ex.Message}",
+                    CloseButtonText = "OK",
+                    MaxWidth = 400
+                };
+                await msgBox.ShowDialogAsync();
+            }
+        }
+
+        private async void NewUser(object? _)
+        {
+            try
+            {
+                var userVm = new UserViewModel(_dashboardService, hasDashboardAccess: true);
+
+                var userWindow = new UserView(userVm);
+
+                userVm.RequestClose += () =>
+                {
+                    userWindow.Close();
+                };
+
+                userWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                var msgBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Erro",
+                    Content = $"Erro ao abrir Usu√°rios: {ex.Message}",
+                    CloseButtonText = "OK",
+                    MaxWidth = 400
+                };
+                await msgBox.ShowDialogAsync();
+            }
         }
 
         private async void NewProduct(object? _)
