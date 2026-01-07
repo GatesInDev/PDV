@@ -32,29 +32,26 @@ namespace PDV.Clients.Services.Implementations
         {
             try
             {
-                string endpoint = $"api/Sales?startDate={DateTime.MinValue:yyyy-MM-dd}&endDate={DateTime.Today:yyyy-MM-dd}";
+                string endpoint = $"api/Sales?startDate={DateTime.MinValue:yyyy-MM-dd}&endDate={DateTime.Today.AddDays(1):yyyy-MM-dd}";
 
                 var dtoList = await _httpClient.GetFromJsonAsync<IEnumerable<SaleResultDto>>(endpoint);
 
                 if (dtoList == null)
                     return new List<TransactionModel>();
 
-                // 2. Mapeia DTO -> TransactionModel (Model da Grid)
                 var transactions = dtoList.Select(dto => new TransactionModel
                 {
                     TransactionId = dto.Id,
 
-                    // Agora é direto, pois o Backend já tratou o nulo
                     CustomerName = dto.CustomerName,
 
                     Amount = dto.TotalAmount,
 
-                    Status = dto.Status, // Ou dto.PaymentMethod, dependendo do que vem do back
+                    Product = dto.Product,
 
                     OccurredAt = dto.SaleDate
                 });
 
-                // 3. Ordena e Pega os top 20
                 return transactions
                     .OrderByDescending(t => t.OccurredAt)
                     .Take(take)

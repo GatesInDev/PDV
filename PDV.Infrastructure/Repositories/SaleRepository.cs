@@ -60,7 +60,7 @@ namespace PDV.Infrastructure.Repositories
                                         .ThenInclude(sp => sp.Product)
                                     .Include(cs => cs.CashSession)
                                     .Include(cn => cn.Customer)
-                                    .Where(s => s.SaleDate >= startDate && s.SaleDate <= endDate)
+                                    .Where(s => s.SaleDate >= startDate && s.SaleDate <= endDate && s.Customer.IsActive == true)
                                     .OrderByDescending(s => s.SaleDate)
                                     .ToListAsync();
         }

@@ -1,4 +1,5 @@
-﻿using PDV.Application.DTOs;
+﻿using System.Text;
+using PDV.Application.DTOs;
 using PDV.Application.DTOs.Sales;
 using PDV.Core.Entities;
 using PDV.Core.Exceptions;
@@ -49,11 +50,14 @@ namespace PDV.Application.Services.Implementations
 
         private SaleResultDto MapToDto(Sale sale)
         {
+            string nomesProdutos = string.Join(", ", sale.SaleProducts.Select(p => p.Product.Name));
+
             var dto = new SaleResultDto
             {
                 Id = sale.Id,
                 SaleDate = sale.SaleDate,
                 TotalAmount = sale.TotalPrice,
+                Product = nomesProdutos,
                 Status = "Concluído",
                 CustomerName = sale.Customer != null ? sale.Customer.Name : "Consumidor Final"
             };

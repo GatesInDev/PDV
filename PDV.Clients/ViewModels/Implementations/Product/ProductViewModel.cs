@@ -280,27 +280,12 @@ public class ProductViewModel : Notifier, IProductViewModel
                 await _apiClient.UpdateProductAsync(SelectedProduct.Id, updateDto);
             }
 
-            var msgBox = new MessageBox
-            {
-                Title = "Sucesso",
-                Content = "Produto salvo com sucesso!",
-                CloseButtonText = "OK"
-            };
-            await msgBox.ShowDialogAsync();
-
             SelectedProduct = null;
             await LoadDataAsync();
         }
         catch (Exception ex)
         {
             ErrorMessage = ex.Message;
-            var msgBox = new MessageBox
-            {
-                Title = "Erro",
-                Content = $"Falha ao salvar: {ex.Message}",
-                CloseButtonText = "OK"
-            };
-            await msgBox.ShowDialogAsync();
         }
         finally
         {
@@ -331,8 +316,7 @@ public class ProductViewModel : Notifier, IProductViewModel
             }
             catch (Exception ex)
             {
-                var msgBox = new MessageBox { Title = "Erro", Content = ex.Message, CloseButtonText = "OK" };
-                await msgBox.ShowDialogAsync();
+                ErrorMessage = ex.Message;
             }
             finally { IsBusy = false; }
         }

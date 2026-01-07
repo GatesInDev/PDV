@@ -176,17 +176,17 @@
                                 Binding="{Binding TransactionId}"
                                 Header="ID Transação" />
                             <DataGridTextColumn
-                                Width="2*"
+                                Width="*"
                                 Binding="{Binding CustomerName}"
                                 Header="Cliente" />
+                            <DataGridTextColumn
+                                Width="2*"
+                                Binding="{Binding Product}"
+                                Header="Produtos" />
                             <DataGridTextColumn
                                 Width="*"
                                 Binding="{Binding Amount, StringFormat=C}"
                                 Header="Valor" />
-                            <DataGridTextColumn
-                                Width="*"
-                                Binding="{Binding Status}"
-                                Header="Status" />
                         </ui:DataGrid.Columns>
                     </ui:DataGrid>
                 </StackPanel>
@@ -241,6 +241,13 @@
                             Content="Relatórios"
                             Icon="{ui:SymbolIcon Book24}"
                             ToolTip="Gerar relatórios." />
+
+                        <ui:CardAction
+                            Margin="0,12,0,0"
+                            Command="{Binding ConfigCommand}"
+                            Content="Configurações"
+                            Icon="{ui:SymbolIcon Settings24}"
+                            ToolTip="Configurações do PDV." />
 
                     </StackPanel>
                 </ui:Card>

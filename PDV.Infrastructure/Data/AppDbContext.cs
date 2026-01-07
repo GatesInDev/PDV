@@ -17,6 +17,7 @@ namespace PDV.Infrastructure.Data
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Category> Categories => Set<Category>();
         public DbSet<Stock> Stocks => Set<Stock>();
+        public DbSet<Config> Configs => Set<Config>();
         public DbSet<StockTransaction> StockTransactions => Set<StockTransaction>();
         public DbSet<Sale> Sales => Set<Sale>();
         public DbSet<Customer> Customers => Set<Customer>();

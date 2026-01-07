@@ -273,14 +273,6 @@ public class UserViewModel : Notifier
                 await _apiClient.UpdateUserAsync(SelectedUser.Id, updateDto);
             }
 
-            var msgBox = new MessageBox
-            {
-                Title = "Sucesso",
-                Content = "Usuário salvo com sucesso!",
-                CloseButtonText = "OK"
-            };
-            await msgBox.ShowDialogAsync();
-
             ErrorMessage = null;
             SelectedUser = null;
             await LoadDataAsync();
@@ -288,13 +280,6 @@ public class UserViewModel : Notifier
         catch (Exception ex)
         {
             ErrorMessage = ex.Message;
-            var msgBox = new MessageBox
-            {
-                Title = "Erro",
-                Content = $"Falha ao salvar: {ex.Message}",
-                CloseButtonText = "OK"
-            };
-            await msgBox.ShowDialogAsync();
         }
         finally
         {

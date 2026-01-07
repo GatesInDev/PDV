@@ -71,6 +71,7 @@ namespace PDV.Clients.ViewModels.Implementations
         public ICommand NewCategoryCommand { get; }
         public ICommand NewProductCommand { get; }
         public ICommand NewReportCommand { get; }
+        public ICommand ConfigCommand { get; }
 
         private bool _isBusy;
 
@@ -85,6 +86,7 @@ namespace PDV.Clients.ViewModels.Implementations
             NewProductCommand = new RelayCommand<object>(NewProduct);
             NewCategoryCommand = new RelayCommand<object>(NewCategory);
             NewReportCommand = new RelayCommand<object>(NewReport);
+            ConfigCommand = new RelayCommand<object>(Config);
 
             _ = LoadInitialAsync();
         }
@@ -249,6 +251,34 @@ namespace PDV.Clients.ViewModels.Implementations
                 {
                     Title = "Erro",
                     Content = $"Erro ao abrir Relatórios: {ex.Message}",
+                    CloseButtonText = "OK",
+                    MaxWidth = 400
+                };
+                await msgBox.ShowDialogAsync();
+            }
+        }
+
+        private async void Config(object? _)
+        {
+            try
+            {
+                var configVm = new ConfigViewModel(_dashboardService);
+
+                var reportWindow = new ConfigView(configVm);
+
+                configVm.RequestClose += () =>
+                {
+                    reportWindow.Close();
+                };
+
+                reportWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                var msgBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Erro",
+                    Content = $"Erro ao abrir Configurações: {ex.Message}",
                     CloseButtonText = "OK",
                     MaxWidth = 400
                 };

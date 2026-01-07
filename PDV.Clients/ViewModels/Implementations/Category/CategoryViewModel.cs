@@ -259,14 +259,6 @@ namespace PDV.Clients.ViewModels.Implementations.Category
                     await _apiClient.UpdateCategoryAsync(SelectedCategory.Id, updateDto);
                 }
 
-                var msgBox = new MessageBox
-                {
-                    Title = "Sucesso",
-                    Content = "Categoria salva com sucesso!",
-                    CloseButtonText = "OK"
-                };
-                await msgBox.ShowDialogAsync();
-
                 ErrorMessage = null;
                 SelectedCategory = null;
                 await LoadDataAsync();
@@ -274,13 +266,6 @@ namespace PDV.Clients.ViewModels.Implementations.Category
             catch (Exception ex)
             {
                 ErrorMessage = ex.Message;
-                var msgBox = new MessageBox
-                {
-                    Title = "Erro",
-                    Content = $"Falha ao salvar: {ex.Message}",
-                    CloseButtonText = "OK"
-                };
-                await msgBox.ShowDialogAsync();
             }
             finally
             {

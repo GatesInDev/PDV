@@ -39,16 +39,53 @@
                 Margin="60"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top">
-                <ui:SymbolIcon
-                    FontSize="64"
-                    Foreground="White"
-                    Symbol="ShoppingBag24" />
+
+                <Grid Height="80" HorizontalAlignment="Left">
+
+                    <ui:SymbolIcon
+                        HorizontalAlignment="Left"
+                        FontSize="64"
+                        Foreground="White"
+                        Symbol="ShoppingBag24">
+                        <ui:SymbolIcon.Style>
+                            <Style TargetType="ui:SymbolIcon">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding StoreLogo}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ui:SymbolIcon.Style>
+                    </ui:SymbolIcon>
+
+                    <Image
+                        HorizontalAlignment="Left"
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        Source="{Binding StoreLogo}"
+                        Stretch="Uniform">
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                <Setter Property="Visibility" Value="Visible" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding StoreLogo}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
+                </Grid>
+
                 <TextBlock
+                    MaxWidth="500"
                     Margin="0,16,0,0"
                     FontSize="48"
                     FontWeight="Bold"
                     Foreground="White"
-                    Text="PDV" />
+                    Text="{Binding StoreName}"
+                    TextWrapping="Wrap" />
+
                 <TextBlock
                     FontSize="24"
                     Foreground="#DDFFFFFF"

@@ -246,17 +246,12 @@ public class CustomerViewModel : Notifier, ICustomerViewModel
                 await _apiClient.UpdateCustomerAsync(SelectedCustomer.Id, updateDto);
             }
 
-            var msgBox = new MessageBox { Title = "Sucesso", Content = "Salvo com sucesso!", CloseButtonText = "OK" };
-            await msgBox.ShowDialogAsync();
-
             SelectedCustomer = null;
             await LoadDataAsync();
         }
         catch (Exception ex)
         {
             ErrorMessage = ex.Message;
-            var msgBox = new MessageBox { Title = "Erro", Content = ex.Message, CloseButtonText = "OK" };
-            await msgBox.ShowDialogAsync();
         }
         finally
         {

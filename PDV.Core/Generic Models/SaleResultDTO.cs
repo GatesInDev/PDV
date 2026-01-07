@@ -13,5 +13,6 @@ namespace PDV.Domain
         public decimal TotalAmount { get; set; }
         public string CustomerName { get; set; } 
         public string Status { get; set; }
+        public string? Product { get; set; }
     }
 }

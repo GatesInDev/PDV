@@ -1,5 +1,4 @@
 ﻿using PDV.Application.DTOs.Cash;
-using PDV.Application.DTOs.Product;
 using PDV.Application.DTOs.Sales;
 using PDV.Clients.Models;
 using PDV.Clients.Services.Interfaces;

@@ -1,12 +1,11 @@
-﻿using Microsoft.Win32;
+﻿using ClosedXML.Excel;
+using Microsoft.Win32;
 using PDV.Clients.Services.Interfaces;
 using PDV.Clients.ViewModels.Interfaces;
 using PDV.Domain;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Text;
 using System.Windows.Input;
-using Wpf.Ui.Controls;
 using Wpf.Ui.Input;
 
 namespace PDV.Clients.ViewModels.Implementations.Reports
@@ -72,6 +71,13 @@ namespace PDV.Clients.ViewModels.Implementations.Reports
             }
         }
 
+        private string _errorMessage;
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set { _errorMessage = value; OnPropertyChanged(); }
+        }
+
         #endregion
 
         #region Commands
@@ -102,13 +108,7 @@ namespace PDV.Clients.ViewModels.Implementations.Reports
         {
             if (StartDate > EndDate)
             {
-                var msg = new MessageBox
-                {
-                    Title = "Data Inválida",
-                    Content = "A Data Inicial não pode ser maior que a Data Final.",
-                    CloseButtonText = "OK"
-                };
-                await msg.ShowDialogAsync();
+                ErrorMessage = "Data invalida.";
                 return;
             }
 
@@ -131,24 +131,12 @@ namespace PDV.Clients.ViewModels.Implementations.Reports
                 }
                 else
                 {
-                    var msg = new MessageBox
-                    {
-                        Title = "Informação",
-                        Content = "Nenhuma venda encontrada para o período selecionado.",
-                        CloseButtonText = "OK"
-                    };
-                    await msg.ShowDialogAsync();
+                    ErrorMessage = "Nenhuma venda encontrada para o período selecionado.";
                 }
             }
             catch (Exception ex)
             {
-                var errorMsg = new MessageBox
-                {
-                    Title = "Erro",
-                    Content = $"Falha ao gerar relatório: {ex.Message}",
-                    CloseButtonText = "OK"
-                };
-                await errorMsg.ShowDialogAsync();
+                ErrorMessage = $"Falha ao gerar relatório: {ex.Message}";
             }
             finally
             {
@@ -161,16 +149,15 @@ namespace PDV.Clients.ViewModels.Implementations.Reports
         {
             if (ReportItems == null || !ReportItems.Any())
             {
-                var alert = new MessageBox { Title = "Atenção", Content = "Não há dados para exportar.", CloseButtonText = "OK" };
-                await alert.ShowDialogAsync();
+                ErrorMessage = "Não há dados para exportar.";
                 return;
             }
 
             var saveFileDialog = new SaveFileDialog
             {
-                Filter = "Arquivo CSV (*.csv)|*.csv",
-                FileName = $"Relatorio_Vendas_{DateTime.Now:yyyyMMdd_HHmm}.csv",
-                Title = "Exportar Relatório"
+                Filter = "Pasta de Trabalho do Excel (*.xlsx)|*.xlsx",
+                FileName = $"Relatorio_Vendas_{DateTime.Now:yyyyMMdd_HHmm}.xlsx",
+                Title = "Exportar Relatório Profissional"
             };
 
             if (saveFileDialog.ShowDialog() == true)
@@ -178,29 +165,106 @@ namespace PDV.Clients.ViewModels.Implementations.Reports
                 IsBusy = true;
                 try
                 {
-                    var sb = new StringBuilder();
+                    var config = await _apiClient.GetConfigAsync();
 
-                    sb.AppendLine("Data;Cliente;Status;Valor Total");
+                    using var workbook = new XLWorkbook();
+                    var ws = workbook.Worksheets.Add("Vendas");
+
+                    ws.Style.Font.FontName = "Calibri";
+                    ws.Style.Font.FontSize = 11;
+
+                    // ================= LOGO =================
+                    if (config?.Logo?.Length > 0)
+                    {
+                        using var ms = new MemoryStream(config.Logo);
+                        var image = ws.AddPicture(ms)
+                                              .MoveTo(ws.Cell("A1"))
+                                              .Scale(0.45);
+
+                        image.Width = 100;
+                        image.Height = 100;
+                    }
+
+                    // ================= CABEÇALHO =================
+                    ws.Cell("C1").Value = config?.NomeFantasia ?? "PDV System";
+                    ws.Cell("C1").Style
+                        .Font.SetBold()
+                        .Font.SetFontSize(20);
+
+                    ws.Cell("C2").Value = "Relatório de Vendas";
+                    ws.Cell("C2").Style.Font.FontSize = 14;
+
+                    ws.Cell("C3").Value = $"Período: {StartDate:dd/MM/yyyy} até {EndDate:dd/MM/yyyy}";
+                    ws.Cell("C3").Style.Font.FontColor = XLColor.Gray;
+
+                    // Linha separadora
+                    ws.Range("A5:D5").Merge();
+                    ws.Cell("A5").Style.Border.BottomBorder = XLBorderStyleValues.Thin;
+
+                    // ================= RESUMO =================
+                    ws.Cell("A6").Value = "Total Vendido";
+                    ws.Cell("B6").Value = TotalRevenue;
+                    ws.Cell("B6").Style.NumberFormat.Format = "R$ #,##0.00";
+                    ws.Cell("B6").Style.Font.SetBold().Font.SetFontColor(XLColor.DarkGreen);
+
+                    ws.Cell("C6").Value = "Ticket Médio";
+                    ws.Cell("D6").Value = AverageTicket;
+                    ws.Cell("D6").Style.NumberFormat.Format = "R$ #,##0.00";
+                    ws.Cell("D6").Style.Font.SetBold();
+
+                    ws.Range("A6:D6").Style.Fill.BackgroundColor = XLColor.FromHtml("#F8F9FA");
+
+                    // ================= TABELA =================
+                    int row = 8;
+
+                    ws.Cell(row, 1).Value = "Data";
+                    ws.Cell(row, 2).Value = "Cliente";
+                    ws.Cell(row, 3).Value = "Produtos";
+                    ws.Cell(row, 4).Value = "Valor";
+
+                    var header = ws.Range(row, 1, row, 4);
+                    header.Style
+                        .Font.SetBold()
+                        .Font.SetFontColor(XLColor.White)
+                        .Fill.SetBackgroundColor(XLColor.FromHtml("#343A40"))
+                        .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+
+                    row++;
 
                     foreach (var item in ReportItems)
                     {
-                        string data = item.SaleDate.ToString("dd/MM/yyyy HH:mm");
-                        string cliente = item.CustomerName?.Replace(";", "") ?? "N/A";
-                        string status = item.Status ?? "N/A";
-                        string valor = item.TotalAmount.ToString("F2");
+                        ws.Cell(row, 1).Value = item.SaleDate;
+                        ws.Cell(row, 1).Style.DateFormat.Format = "dd/MM/yyyy HH:mm";
 
-                        sb.AppendLine($"{data};{cliente};{status};{valor}");
+                        ws.Cell(row, 2).Value = item.CustomerName ?? "Consumidor Final";
+                        ws.Cell(row, 3).Value = item.Product;
+
+                        ws.Cell(row, 4).Value = item.TotalAmount;
+                        ws.Cell(row, 4).Style.NumberFormat.Format = "R$ #,##0.00";
+
+                        row++;
                     }
 
-                    await File.WriteAllTextAsync(saveFileDialog.FileName, sb.ToString(), Encoding.UTF8);
+                    // Criar tabela com zebra
+                    var tableRange = ws.Range(8, 1, row - 1, 4);
+                    var table = tableRange.CreateTable();
+                    table.Theme = XLTableTheme.TableStyleMedium9;
 
-                    var successMsg = new MessageBox { Title = "Sucesso", Content = "Arquivo exportado com sucesso!", CloseButtonText = "OK" };
-                    await successMsg.ShowDialogAsync();
+                    // Alinhamentos
+                    ws.Column(1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    ws.Column(4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+                    // Ajustes finais
+                    ws.Columns().AdjustToContents();
+                    ws.Column(2).Width += 5;
+
+                    workbook.SaveAs(saveFileDialog.FileName);
+                    ErrorMessage = null;
+                    
                 }
                 catch (Exception ex)
                 {
-                    var errorMsg = new MessageBox { Title = "Erro", Content = $"Falha ao exportar: {ex.Message}", CloseButtonText = "OK" };
-                    await errorMsg.ShowDialogAsync();
+                    ErrorMessage = $"Falha ao exportar Excel: {ex.Message}";
                 }
                 finally
                 {
